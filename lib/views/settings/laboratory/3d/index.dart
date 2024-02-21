@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-///
 import 'package:ditredi/ditredi.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:remixicon/remixicon.dart';
 
-///
 import 'package:moodexample/themes/app_theme.dart';
 import 'package:moodexample/widgets/action_button/action_button.dart';
 
@@ -21,33 +19,29 @@ class _Page3DState extends State<Page3D> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData(),
+      data: ThemeData(useMaterial3: false),
       child: Scaffold(
         backgroundColor: const Color(0xFFE2DDE4),
         appBar: AppBar(
           elevation: 0,
+          forceMaterialTransparency: true,
           backgroundColor: const Color(0xFFF6F8FA),
           foregroundColor: Colors.black87,
           shadowColor: Colors.transparent,
           titleTextStyle: TextStyle(color: Colors.black, fontSize: 14.sp),
-          title: const Text("3D 城市"),
+          title: const Text('3D 城市'),
           leading: ActionButton(
             decoration: BoxDecoration(
-                color: AppTheme.backgroundColor1,
-                borderRadius:
-                    BorderRadius.only(bottomRight: Radius.circular(18.w))),
-            child: Icon(
-              Remix.arrow_left_line,
-              size: 24.sp,
+              color: AppTheme.backgroundColor1,
+              borderRadius: BorderRadius.only(
+                bottomRight: Radius.circular(18.w),
+              ),
             ),
-            onTap: () {
-              Navigator.of(context).pop();
-            },
+            child: Icon(Remix.arrow_left_line, size: 24.sp),
+            onTap: () => Navigator.of(context).pop(),
           ),
         ),
-        body: const SafeArea(
-          child: Body3D(),
-        ),
+        body: const SafeArea(child: Body3D()),
       ),
     );
   }
@@ -85,12 +79,12 @@ class _Body3DState extends State<Body3D> {
     return DiTreDiDraggable(
       controller: controller,
       child: FutureBuilder<List<Face3D>>(
-        future: ObjParser().loadFromResources("assets/3d/city/city.obj"),
+        future: ObjParser().loadFromResources('assets/3d/city/city.obj'),
         builder: ((context, snapshot) {
           Widget widget;
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError) {
-              widget = const Text("3D模型加载出错了");
+              widget = const Text('3D模型加载出错了');
             } else {
               widget = DiTreDi(
                 figures: [

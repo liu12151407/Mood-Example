@@ -1,15 +1,12 @@
-import 'package:bonfire/bonfire.dart';
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:remixicon/remixicon.dart';
+import 'package:bonfire/bonfire.dart';
 
-///
 import 'package:moodexample/themes/app_theme.dart';
 import 'package:moodexample/widgets/action_button/action_button.dart';
 
-///
 import 'package:moodexample/views/settings/laboratory/game/mini_fantasy/index.dart';
 import 'package:moodexample/views/settings/laboratory/game/mini_fantasy/sprite_sheet/sprite_sheet_orc.dart'
     as mini_fantasy;
@@ -20,7 +17,6 @@ import 'package:moodexample/views/settings/laboratory/game/mini_game/sprite_shee
     as mini_game;
 import 'package:moodexample/views/settings/laboratory/game/mini_game/sprite_sheet/sprite_sheet_player.dart'
     as mini_game;
-import 'mini_game/controllers/human_player_controller.dart' as mini_game;
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
@@ -33,21 +29,23 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData(),
+      data: ThemeData(useMaterial3: false),
       child: Scaffold(
         backgroundColor: const Color(0xFFF6F8FA),
         appBar: AppBar(
           elevation: 0,
+          forceMaterialTransparency: true,
           backgroundColor: const Color(0xFFF6F8FA),
           foregroundColor: Colors.black87,
           shadowColor: Colors.transparent,
           titleTextStyle: TextStyle(color: Colors.black, fontSize: 14.sp),
-          title: const Text("游戏合集"),
+          title: const Text('游戏合集'),
           leading: ActionButton(
             decoration: BoxDecoration(
-                color: AppTheme.backgroundColor1,
-                borderRadius:
-                    BorderRadius.only(bottomRight: Radius.circular(18.w))),
+              color: AppTheme.backgroundColor1,
+              borderRadius:
+                  BorderRadius.only(bottomRight: Radius.circular(18.w)),
+            ),
             child: Icon(
               Remix.arrow_left_line,
               size: 24.sp,
@@ -93,8 +91,8 @@ class _UniMPMiniappsBodyState extends State<UniMPMiniappsBody> {
             size: 32.sp,
             color: Colors.black87,
           ),
-          title: "Mini Fantasy",
-          subtitle: "2D 地牢风格游戏，基于 Mini Fantasy 示例，修改了一些奇怪的东西。",
+          title: 'Mini Fantasy',
+          subtitle: '2D 地牢风格游戏，基于 Mini Fantasy 示例，修改了一些奇怪的东西。',
           onPressed: () async {
             /// 载入游戏静态资源
             await mini_fantasy.SpriteSheetOrc.load();
@@ -114,9 +112,9 @@ class _UniMPMiniappsBodyState extends State<UniMPMiniappsBody> {
             size: 32.sp,
             color: Colors.black87,
           ),
-          title: "疯狂射击、怪物生成",
+          title: '疯狂射击、怪物生成',
           subtitle:
-              "素材来源：https://github.com/RafaelBarbosatec/mini_fantasy、https://0x72.itch.io/dungeontileset-ii",
+              '素材来源：https://github.com/RafaelBarbosatec/mini_fantasy、https://0x72.itch.io/dungeontileset-ii',
           onPressed: () async {
             /// 横屏
             await Flame.device.setLandscape();
@@ -124,17 +122,16 @@ class _UniMPMiniappsBodyState extends State<UniMPMiniappsBody> {
             /// 载入游戏静态资源
             await mini_game.SpriteSheetPlayer.load();
             await mini_game.SpriteSheetOrc.load();
-            BonfireInjector()
-                .putFactory((i) => mini_game.HumanPlayerController());
             if (!mounted) return;
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => WillPopScope(
-                  onWillPop: () async {
-                    /// 竖屏
+                builder: (context) => PopScope(
+                  canPop: false,
+                  onPopInvoked: (bool didPop) async {
+                    if (didPop) return;
+                    // 竖屏
                     await Flame.device.setPortrait();
-                    return true;
                   },
                   child: const MiniGamePage(),
                 ),
@@ -166,7 +163,7 @@ class ListCard extends StatelessWidget {
   final Widget leading;
 
   /// 点击打开触发
-  final Function()? onPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {

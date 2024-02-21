@@ -1,31 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-///
 import 'package:moodexample/themes/app_theme.dart';
 import 'package:moodexample/widgets/lock_screen/lock_screen.dart';
 import 'package:moodexample/common/local_auth_utils.dart';
-import 'package:moodexample/db/preferences_db.dart';
 import 'package:moodexample/generated/l10n.dart';
 
-///
-import 'package:moodexample/view_models/application/application_view_model.dart';
+import 'package:moodexample/providers/application/application_provider.dart';
 
 /// 安全
-class SettingKey extends StatefulWidget {
+class SettingKey extends StatelessWidget {
   const SettingKey({super.key});
 
-  @override
-  State<SettingKey> createState() => _SettingKeyState();
-}
-
-class _SettingKeyState extends State<SettingKey> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -69,51 +60,38 @@ class KeyBody extends StatefulWidget {
 }
 
 class _KeyBodyState extends State<KeyBody> {
-  static final _titleIconSize = 18.sp;
+  final _titleIconSize = 18.sp;
   List<BiometricType> localAuthList = [];
   IconData? localAuthIcon;
+  String localAuthText = '';
 
-  void init() async {
-    ApplicationViewModel applicationViewModel =
-        Provider.of<ApplicationViewModel>(context, listen: false);
-    localAuthList = await LocalAuthUtils().localAuthList();
-    localAuthIcon = await LocalAuthUtils().localAuthIcon();
+  void init(BuildContext context) async {
+    final ApplicationProvider applicationProvider =
+        context.read<ApplicationProvider>();
+    final localAuthUtils = await LocalAuthUtils();
+    localAuthList = await localAuthUtils.localAuthList();
+    localAuthIcon = localAuthUtils.localAuthIcon(localAuthList);
+    localAuthText = localAuthUtils.localAuthText(context, localAuthList);
 
     /// 获取-安全-生物特征识别是否开启
-    await PreferencesDB().getAppKeyBiometric(applicationViewModel);
+    applicationProvider.loadKeyBiometric();
   }
 
   @override
   void initState() {
     super.initState();
-    init();
+    init(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationViewModel>(
-      builder: (_, applicationViewModel, child) {
-        final String keyPassword = applicationViewModel.keyPassword;
-        final bool keyBiometric = applicationViewModel.keyBiometric;
-
-        /// 生物识别处理
-        String authText = "";
-        localAuthList.contains(BiometricType.weak)
-            ? authText = S.of(context).app_setting_security_biometric_weak
-            : null;
-        localAuthList.contains(BiometricType.iris)
-            ? authText = S.of(context).app_setting_security_biometric_iris
-            : null;
-        localAuthList.contains(BiometricType.face)
-            ? authText = S.of(context).app_setting_security_biometric_face
-            : null;
-        localAuthList.contains(BiometricType.fingerprint)
-            ? authText =
-                S.of(context).app_setting_security_biometric_fingerprint
-            : null;
+    return Consumer<ApplicationProvider>(
+      builder: (_, applicationProvider, child) {
+        final String keyPassword = applicationProvider.keyPassword;
+        final bool keyBiometric = applicationProvider.keyBiometric;
 
         Widget biometricsAuth = const SizedBox();
-        if (keyPassword != "" && authText != "") {
+        if (keyPassword != '' && localAuthText != '') {
           biometricsAuth = ListTile(
             leading: Icon(
               localAuthIcon,
@@ -122,27 +100,24 @@ class _KeyBodyState extends State<KeyBody> {
                   isDarkMode(context) ? Colors.white : const Color(0xFF202427),
             ),
             title: Text(
-              authText,
+              localAuthText,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium!
                   .copyWith(fontSize: 14.sp, fontWeight: FontWeight.normal),
             ),
             trailing: Semantics(
-              label: authText,
+              label: localAuthText,
               checked: keyBiometric,
               child: CupertinoSwitch(
                 value: keyBiometric,
                 onChanged: (value) async {
-                  applicationViewModel.setKeyPasswordScreenOpen(false);
+                  applicationProvider.keyPasswordScreenOpen = false;
                   if (value) {
-                    await LocalAuthUtils().localAuthBiometric(context)
-                        ? await PreferencesDB()
-                            .setAppKeyBiometric(applicationViewModel, value)
-                        : null;
+                    if (await LocalAuthUtils().localAuthBiometric(context))
+                      applicationProvider.keyBiometric = value;
                   } else {
-                    await PreferencesDB()
-                        .setAppKeyBiometric(applicationViewModel, value);
+                    applicationProvider.keyBiometric = value;
                   }
                 },
               ),
@@ -170,24 +145,20 @@ class _KeyBodyState extends State<KeyBody> {
               ),
               trailing: Semantics(
                 label: S.of(context).app_setting_security_lock,
-                checked: keyPassword != "",
+                checked: keyPassword != '',
                 child: CupertinoSwitch(
-                  value: keyPassword != "",
+                  value: keyPassword != '',
                   onChanged: (value) async {
-                    applicationViewModel.setKeyPasswordScreenOpen(false);
+                    applicationProvider.keyPasswordScreenOpen = false;
                     if (value) {
                       createlockScreen(
                         context,
-                        (password) async {
-                          await PreferencesDB().setAppKeyPassword(
-                              applicationViewModel, password);
-                        },
+                        (password) =>
+                            applicationProvider.keyPassword = password,
                       );
                     } else {
-                      await PreferencesDB()
-                          .setAppKeyPassword(applicationViewModel, "");
-                      await PreferencesDB()
-                          .setAppKeyBiometric(applicationViewModel, false);
+                      applicationProvider.keyPassword = '';
+                      applicationProvider.keyBiometric = false;
                     }
                   },
                 ),

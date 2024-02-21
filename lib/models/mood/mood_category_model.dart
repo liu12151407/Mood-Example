@@ -1,35 +1,5 @@
 import 'dart:convert';
-
-MoodCategoryModel moodCategoryModelFromJson(String str) =>
-    MoodCategoryModel.fromJson(json.decode(str));
-String moodCategoryModelToJson(MoodCategoryModel data) =>
-    json.encode(data.toJson());
-
-/// 心情类别数据
-class MoodCategoryModel {
-  MoodCategoryModel({
-    this.moodCategoryData,
-  });
-
-  final List<MoodCategoryData>? moodCategoryData;
-
-  factory MoodCategoryModel.fromJson(Map<String, dynamic> json) =>
-      MoodCategoryModel(
-        moodCategoryData: List<MoodCategoryData>.from(
-          json["data"].map(
-            (x) => MoodCategoryData.fromJson(x),
-          ),
-        ),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "moodCategoryData": List<dynamic>.from(
-          moodCategoryData!.map(
-            (x) => x.toJson(),
-          ),
-        ),
-      };
-}
+import 'package:flutter/widgets.dart';
 
 MoodCategoryData moodCategoryDataFromJson(String str) =>
     MoodCategoryData.fromJson(json.decode(str));
@@ -37,27 +7,26 @@ String moodCategoryDataToJson(MoodCategoryData data) =>
     json.encode(data.toJson());
 
 /// 心情类别数据
+@immutable
 class MoodCategoryData {
-  MoodCategoryData({
-    this.icon,
-    this.title,
+  const MoodCategoryData({
+    required this.icon,
+    required this.title,
   });
-
-  // 表情
-  late String? icon;
-  // 标题
-  late String? title;
 
   factory MoodCategoryData.fromJson(Map<String, dynamic> json) =>
       MoodCategoryData(
-        icon: json["icon"],
-        title: json["title"],
+        icon: json['icon'],
+        title: json['title'],
       );
 
-  get length => null;
+  // 表情
+  final String icon;
+  // 标题
+  final String title;
 
   Map<String, dynamic> toJson() => {
-        "icon": icon,
-        "title": title,
+        'icon': icon,
+        'title': title,
       };
 }

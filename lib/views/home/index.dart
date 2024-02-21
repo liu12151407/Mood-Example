@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tilt/flutter_tilt.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:animations/animations.dart';
 
-///
 import 'package:moodexample/themes/app_theme.dart';
 import 'package:moodexample/routes.dart';
 import 'package:moodexample/generated/l10n.dart';
@@ -16,12 +15,10 @@ import 'package:moodexample/widgets/animation/animation.dart';
 import 'package:moodexample/views/mood/mood_content.dart';
 import 'package:moodexample/views/web_view/web_view.dart';
 
-///
 import 'package:moodexample/models/mood/mood_category_model.dart';
 import 'package:moodexample/models/mood/mood_model.dart';
-import 'package:moodexample/view_models/mood/mood_view_model.dart';
-import 'package:moodexample/view_models/application/application_view_model.dart';
-import 'package:moodexample/services/mood/mood_service.dart';
+import 'package:moodexample/providers/mood/mood_provider.dart';
+import 'package:moodexample/providers/application/application_provider.dart';
 
 /// 首页
 class HomePage extends StatefulWidget {
@@ -42,7 +39,7 @@ class _HomePageState extends State<HomePage>
     super.build(context);
     return const Scaffold(
       body: SafeArea(
-        child: HomeBody(key: Key("widget_home_body")),
+        child: HomeBody(key: Key('widget_home_body')),
       ),
     );
   }
@@ -69,98 +66,86 @@ class _HomeBodyState extends State<HomeBody> {
         SliverAppBar(
           pinned: false,
           elevation: 0,
+          forceMaterialTransparency: true,
           backgroundColor: Colors.transparent,
-          flexibleSpace: Align(
-            child: Container(
-              margin: EdgeInsets.only(
-                left: 24.w,
-                right: 24.w,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Text(
-                      S.of(context).home_hi,
-                      style: TextStyle(
-                        fontSize: 48.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      semanticsLabel:
-                          S.of(context).app_bottomNavigationBar_title_home,
-                    ),
+          flexibleSpace: Container(
+            alignment: Alignment.center,
+            margin: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  S.of(context).home_hi,
+                  style: TextStyle(
+                    fontSize: 48.sp,
+                    fontWeight: FontWeight.bold,
                   ),
-                  Image.asset(
-                    "assets/images/woolly/woolly-yellow-star.png",
-                    height: 60.w,
-                    excludeFromSemantics: true,
-                  ),
-                ],
-              ),
+                  semanticsLabel:
+                      S.of(context).app_bottomNavigationBar_title_home,
+                ),
+                Image.asset(
+                  'assets/images/woolly/woolly-yellow-star.png',
+                  height: 60.w,
+                  excludeFromSemantics: true,
+                ),
+              ],
             ),
           ),
           collapsedHeight: 100.w,
           expandedHeight: 100.w,
         ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return Padding(
-                padding: EdgeInsets.only(bottom: 48.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// 头部
-                    Semantics(
-                      container: true,
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          left: 24.w,
-                          right: 24.w,
-                          top: 0.w,
-                          bottom: 12.w,
-                        ),
-                        child: const Header(),
-                      ),
-                    ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 48.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// 头部
+                Padding(
+                  padding: EdgeInsets.only(top: 12.w, left: 24.w, right: 24.w),
+                  child: Semantics(
+                    container: true,
+                    child: const Header(),
+                  ),
+                ),
 
-                    /// 情绪选项卡
-                    const OptionMood(key: Key("widget_option_mood")),
+                /// 情绪选项卡
+                Padding(
+                  padding: EdgeInsets.only(top: 12.w),
+                  child: const OptionMood(key: Key('widget_option_mood')),
+                ),
 
-                    /// 公告卡片
-                    Padding(
-                      padding: EdgeInsets.all(24.w),
-                      child: const MergeSemantics(child: NoticeCard()),
-                    ),
+                /// 公告卡片
+                Padding(
+                  padding: EdgeInsets.all(24.w),
+                  child: const MergeSemantics(child: NoticeCard()),
+                ),
 
-                    /// 相关文章
-                    Padding(
-                      padding: EdgeInsets.all(24.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Semantics(
-                            container: true,
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 24.w),
-                              child: Text(
-                                S.of(context).home_help_title,
-                                style: TextStyle(
-                                  fontSize: 24.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                /// 相关文章
+                Padding(
+                  padding: EdgeInsets.all(24.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Semantics(
+                        container: true,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 24.w),
+                          child: Text(
+                            S.of(context).home_help_title,
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Article(),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                      const Article(),
+                    ],
+                  ),
                 ),
-              );
-            },
-            childCount: 1,
+              ],
+            ),
           ),
         ),
       ],
@@ -169,45 +154,30 @@ class _HomeBodyState extends State<HomeBody> {
 }
 
 /// 头部
-class Header extends StatefulWidget {
+class Header extends StatelessWidget {
   const Header({super.key});
 
   @override
-  State<Header> createState() => _HeaderState();
-}
-
-class _HeaderState extends State<Header> {
-  @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Padding(
-          padding: EdgeInsets.only(top: 12.w),
-          child: Row(
-            children: [
-              Flexible(
-                child: Text(
-                  S.of(context).home_moodChoice_title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 20.sp,
-                  ),
-                ),
-              ),
-              Consumer<MoodViewModel>(
-                builder: (_, moodViewModel, child) {
-                  /// 加载数据的占位
-                  if (moodViewModel.moodCategoryList!.isEmpty) {
-                    return Align(
-                      child: CupertinoActivityIndicator(radius: 12.sp),
-                    );
-                  }
-                  return const SizedBox();
-                },
-              ),
-            ],
+        Text(
+          S.of(context).home_moodChoice_title,
+          style: TextStyle(
+            fontWeight: FontWeight.normal,
+            fontSize: 20.sp,
           ),
+        ),
+        Consumer<MoodProvider>(
+          builder: (_, moodProvider, child) {
+            /// 加载数据的占位
+            if (moodProvider.moodCategoryList.isEmpty) {
+              return Align(
+                child: CupertinoActivityIndicator(radius: 12.sp),
+              );
+            }
+            return const SizedBox();
+          },
         ),
       ],
     );
@@ -226,11 +196,10 @@ class _OptionMoodState extends State<OptionMood> {
   @override
   void initState() {
     super.initState();
-    MoodViewModel moodViewModel =
-        Provider.of<MoodViewModel>(context, listen: false);
+    final MoodProvider moodProvider = context.read<MoodProvider>();
 
     /// 获取所有心情类别
-    MoodService.getMoodCategoryAll(moodViewModel);
+    moodProvider.loadMoodCategoryAllList();
   }
 
   @override
@@ -241,18 +210,15 @@ class _OptionMoodState extends State<OptionMood> {
       physics: const AlwaysScrollableScrollPhysics(
         parent: BouncingScrollPhysics(),
       ),
-      child: Consumer<MoodViewModel>(
-        builder: (_, moodViewModel, child) {
+      child: Consumer<MoodProvider>(
+        builder: (_, moodProvider, child) {
           /// 所有心情类型数据
-          List<Widget> widgetList = [];
+          final List<Widget> widgetList = [];
 
           /// 数据渲染
-          for (MoodCategoryData list in moodViewModel.moodCategoryList ?? []) {
+          for (final MoodCategoryData list in moodProvider.moodCategoryList) {
             widgetList.add(
-              OptionCard(
-                title: list.title ?? "",
-                icon: list.icon ?? "",
-              ),
+              OptionCard(title: list.title, icon: list.icon),
             );
           }
 
@@ -282,13 +248,13 @@ class OptionCard extends StatelessWidget {
   /// Icon
   final String icon;
 
-  /// 图标大小
-  static final double _iconSize = 32.sp;
-
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationViewModel>(
-      builder: (_, applicationViewModel, child) {
+    /// 图标大小
+    final double _iconSize = 32.sp;
+
+    return Consumer<ApplicationProvider>(
+      builder: (_, applicationProvider, child) {
         return OpenContainer(
           useRootNavigator: true,
           clipBehavior: Clip.none,
@@ -296,6 +262,7 @@ class OptionCard extends StatelessWidget {
           transitionDuration: const Duration(milliseconds: 450),
           closedBuilder: (_, openContainer) {
             return GestureDetector(
+              onTap: openContainer,
               child: Column(
                 children: [
                   AnimatedPress(
@@ -332,22 +299,21 @@ class OptionCard extends StatelessWidget {
                   ),
                 ],
               ),
-              onTap: () {
-                openContainer();
-              },
             );
           },
           openElevation: 0,
           openColor: Colors.transparent,
           middleColor: Colors.transparent,
           closedElevation: 0,
-          closedShape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.w)),
+          closedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.w),
+          ),
           closedColor: Colors.transparent,
           openBuilder: (_, closeContainer) {
             // 跳转输入内容页
-            String nowDateTime = DateTime.now().toString().substring(0, 10);
-            MoodData moodData = MoodData();
+            final String nowDateTime =
+                DateTime.now().toString().substring(0, 10);
+            final MoodData moodData = MoodData();
             moodData.icon = icon;
             moodData.title = title;
             moodData.createTime = nowDateTime;
@@ -364,6 +330,119 @@ class OptionCard extends StatelessWidget {
 class NoticeCard extends StatelessWidget {
   const NoticeCard({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return Tilt(
+      tiltConfig: const TiltConfig(
+        leaveDuration: Duration(seconds: 1),
+        leaveCurve: Curves.elasticOut,
+      ),
+      lightConfig: const LightConfig(disable: true),
+      shadowConfig: const ShadowConfig(disable: true),
+      childLayout: ChildLayout(
+        outer: [
+          Positioned(
+            right: -20.w,
+            child: TiltParallax(
+              size: const Offset(15, 15),
+              child: Image.asset(
+                'assets/images/onboarding/onboarding_3.png',
+                fit: BoxFit.contain,
+                width: 180.w,
+              ),
+            ),
+          ),
+        ],
+        inner: [
+          Positioned(
+            left: 24.w,
+            bottom: 24.w,
+            child: TiltParallax(
+              size: const Offset(5, 5),
+              child: Container(
+                constraints: BoxConstraints(
+                  minHeight: 45.w,
+                  minWidth: 95.w,
+                ),
+                child: AnimatedPress(
+                  child: OutlinedButton(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all(Colors.white),
+                      backgroundColor:
+                          MaterialStateProperty.all(Colors.black87),
+                      textStyle: MaterialStateProperty.all(
+                        TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.sp),
+                        ),
+                      ),
+                      overlayColor: MaterialStateProperty.all(Colors.white10),
+                    ),
+                    onPressed: () => {
+                      /// 导航到新路由
+                      Navigator.pushNamed(
+                        context,
+                        Routes.onboarding,
+                      ).then((result) {}),
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(right: 4.w),
+                          child: Text(
+                            S.of(context).home_upgrade_button,
+                            strutStyle: const StrutStyle(
+                              forceStrutHeight: false,
+                              leading: 1,
+                            ),
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Remix.play_circle_fill,
+                          size: 24.sp,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+        behind: [
+          /// 阴影
+          TiltParallax(
+            size: const Offset(-16, -16),
+            child: shadow(
+              opacity: 0.2,
+              margin: EdgeInsets.only(left: 24.w, right: 24.w, top: 32.w),
+            ),
+          ),
+          TiltParallax(
+            size: const Offset(-8, -8),
+            child: shadow(
+              opacity: 0.4,
+              margin: EdgeInsets.only(left: 12.w, right: 12.w, top: 16.w),
+            ),
+          ),
+        ],
+      ),
+      child: SizedBox(
+        height: 190.w,
+        child: const ActionCard(),
+      ),
+    );
+  }
+
   /// 阴影
   Widget shadow({
     EdgeInsetsGeometry? margin,
@@ -378,182 +457,61 @@ class NoticeCard extends StatelessWidget {
       ),
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        /// 阴影
-        shadow(
-          opacity: 0.2,
-          margin: EdgeInsets.only(left: 24.w, right: 24.w, top: 16.w),
-        ),
-        shadow(
-          opacity: 0.4,
-          margin: EdgeInsets.only(left: 12.w, right: 12.w, top: 8.w),
-        ),
-
-        /// 正文
-        SizedBox(
-          height: 190.w,
-          child: const ActionCard(),
-        ),
-      ],
-    );
-  }
 }
 
 /// 操作卡片
-class ActionCard extends StatefulWidget {
+class ActionCard extends StatelessWidget {
   const ActionCard({super.key});
 
   @override
-  State<ActionCard> createState() => _ActionCardState();
-}
-
-class _ActionCardState extends State<ActionCard> {
-  @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    return Container(
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.bottomLeft,
           end: Alignment.topRight,
-          colors: [
-            Color(0xFFFFBBBB),
-            Color(0xFFFFBBBB),
-            Color(0xFFFFC5C5),
-          ],
+          colors: [Color(0xFFFFBBBB), Color(0xFFFFBBBB), Color(0xFFFFC5C5)],
         ),
         borderRadius: BorderRadius.circular(30.w),
       ),
-      child: Padding(
-        padding: EdgeInsets.all(24.w),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              alignment: Alignment.centerLeft,
-              children: [
-                /// 图片或装饰
-                Positioned(
-                  bottom: -18.w,
-                  left: 128.w,
-                  child: Image.asset(
-                    'assets/images/onboarding/onboarding_3.png',
-                    fit: BoxFit.contain,
-                    width: 180.w,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// 文字和按钮
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                S.of(context).home_upgrade_title,
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8.w),
+                child: Text(
+                  S.of(context).home_upgrade_content,
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontSize: 16.sp,
                   ),
                 ),
-
-                /// 文字和按钮
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            S.of(context).home_upgrade_title,
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 8.w),
-                            child: Text(
-                              S.of(context).home_upgrade_content,
-                              style: TextStyle(
-                                color: Colors.black87,
-                                fontSize: 16.sp,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      constraints: BoxConstraints(
-                        minHeight: 45.w,
-                        minWidth: 95.w,
-                      ),
-                      child: AnimatedPress(
-                        child: OutlinedButton(
-                          style: ButtonStyle(
-                            foregroundColor:
-                                MaterialStateProperty.all(Colors.white),
-                            backgroundColor:
-                                MaterialStateProperty.all(Colors.black87),
-                            textStyle: MaterialStateProperty.all(
-                              TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14.sp),
-                              ),
-                            ),
-                            overlayColor:
-                                MaterialStateProperty.all(Colors.white10),
-                          ),
-                          onPressed: () => {
-                            /// 导航到新路由
-                            Navigator.pushNamed(
-                              context,
-                              Routes.onboarding,
-                            ).then((result) {})
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.only(right: 4.w),
-                                child: Text(
-                                  S.of(context).home_upgrade_button,
-                                  strutStyle: const StrutStyle(
-                                    forceStrutHeight: false,
-                                    leading: 1,
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                Remix.play_circle_fill,
-                                size: 24.sp,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
 }
 
 /// 相关文章
-class Article extends StatefulWidget {
+class Article extends StatelessWidget {
   const Article({super.key});
 
-  @override
-  State<Article> createState() => _ArticleState();
-}
-
-class _ArticleState extends State<Article> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
@@ -568,7 +526,7 @@ class _ArticleState extends State<Article> {
           transitionDuration: const Duration(milliseconds: 450),
           closedBuilder: (_, openContainer) {
             return ArticleCard(
-              key: const Key("widget_home_article_1"),
+              key: const Key('widget_home_article_1'),
               height: 220.w,
               width: 148.w,
               gradient: const LinearGradient(
@@ -642,12 +600,13 @@ class _ArticleState extends State<Article> {
           openColor: Theme.of(context).scaffoldBackgroundColor,
           middleColor: Theme.of(context).scaffoldBackgroundColor,
           closedElevation: 0,
-          closedShape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.w)),
+          closedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(17.w),
+          ),
           closedColor: const Color(0xFFFFCEBD),
           openBuilder: (_, closeContainer) {
             return WebViewPage(
-              url: ValueConvert("https://github.com/AmosHuKe/Mood-Example")
+              url: ValueConvert('https://github.com/AmosHuKe/Mood-Example')
                   .encode(),
             );
           },
@@ -659,7 +618,7 @@ class _ArticleState extends State<Article> {
           transitionDuration: const Duration(milliseconds: 450),
           closedBuilder: (_, openContainer) {
             return ArticleCard(
-              key: const Key("widget_home_article_2"),
+              key: const Key('widget_home_article_2'),
               height: 200.w,
               width: 148.w,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -722,7 +681,7 @@ class _ArticleState extends State<Article> {
                             size: 24.sp,
                             color: Colors.black87,
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -734,12 +693,13 @@ class _ArticleState extends State<Article> {
           openColor: Theme.of(context).scaffoldBackgroundColor,
           middleColor: Theme.of(context).scaffoldBackgroundColor,
           closedElevation: 0,
-          closedShape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.w)),
+          closedShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(17.w),
+          ),
           closedColor: const Color(0xFFFFD390),
           openBuilder: (_, closeContainer) {
             return WebViewPage(
-              url: ValueConvert("https://amoshk.top/").encode(),
+              url: ValueConvert('https://amoshk.top/').encode(),
             );
           },
         ),
@@ -779,7 +739,7 @@ class ArticleCard extends StatelessWidget {
   /// 组件
   final List<Widget> children;
 
-  final Function()? onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -787,21 +747,17 @@ class ArticleCard extends StatelessWidget {
       scaleEnd: 0.9,
       child: GestureDetector(
         onTap: onTap,
-        child: SizedBox(
+        child: Container(
           width: width,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: gradient,
-              borderRadius: BorderRadius.circular(17.w),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(14.w),
-              child: Column(
-                mainAxisAlignment: mainAxisAlignment,
-                crossAxisAlignment: crossAxisAlignment,
-                children: children,
-              ),
-            ),
+          padding: EdgeInsets.all(14.w),
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(17.w),
+          ),
+          child: Column(
+            mainAxisAlignment: mainAxisAlignment,
+            crossAxisAlignment: crossAxisAlignment,
+            children: children,
           ),
         ),
       ),

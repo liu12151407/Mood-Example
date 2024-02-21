@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
-///
 import 'package:intl/intl.dart';
 import 'package:vibration/vibration.dart';
 
@@ -13,14 +12,14 @@ import 'package:vibration/vibration.dart';
 ///
 /// @return [String] 日期
 String getDatetimeNow(String format) {
-  DateTime now = DateTime.now();
-  String formattedDate = DateFormat(format).format(now);
+  final DateTime now = DateTime.now();
+  final String formattedDate = DateFormat(format).format(now);
   return formattedDate.toString();
 }
 
 /// 震动
 Future<void> vibrate() async {
-  debugPrint("~~~ 震动 ~~~");
+  print('~~~ 震动 ~~~');
   Vibration.vibrate(duration: 10);
 }
 

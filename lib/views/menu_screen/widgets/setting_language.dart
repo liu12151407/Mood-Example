@@ -1,26 +1,17 @@
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:moodexample/generated/l10n.dart';
 import 'package:provider/provider.dart';
 
-///
-import 'package:moodexample/db/preferences_db.dart';
 import 'package:moodexample/config/language.dart';
 
-///
-import 'package:moodexample/view_models/application/application_view_model.dart';
+import 'package:moodexample/providers/application/application_provider.dart';
 
 /// 语言设置
-class SettingLanguage extends StatefulWidget {
+class SettingLanguage extends StatelessWidget {
   const SettingLanguage({super.key});
 
-  @override
-  State<SettingLanguage> createState() => _SettingLanguageState();
-}
-
-class _SettingLanguageState extends State<SettingLanguage> {
   /// 语言列表
   static const _languageConfig = languageConfig;
 
@@ -32,13 +23,13 @@ class _SettingLanguageState extends State<SettingLanguage> {
       ),
       children: [
         /// 跟随系统
-        Selector<ApplicationViewModel, bool>(
-          selector: (_, applicationViewModel) =>
-              applicationViewModel.localeSystem,
+        Selector<ApplicationProvider, bool>(
+          selector: (_, applicationProvider) =>
+              applicationProvider.localeSystem,
           builder: (_, localeSystem, child) {
-            ApplicationViewModel applicationViewModel =
-                Provider.of<ApplicationViewModel>(context, listen: false);
-            return RadioListTile(
+            final ApplicationProvider applicationProvider =
+                context.read<ApplicationProvider>();
+            return RadioListTile<bool>(
               value: localeSystem,
               groupValue: true,
               title: Text(
@@ -48,33 +39,29 @@ class _SettingLanguageState extends State<SettingLanguage> {
                     .bodyMedium!
                     .copyWith(fontSize: 14.sp, fontWeight: FontWeight.normal),
               ),
-              onChanged: (value) async {
-                await PreferencesDB()
-                    .setAppIsLocaleSystem(applicationViewModel, true);
-              },
+              onChanged: (_) => applicationProvider.localeSystem = true,
             );
           },
         ),
 
         /// 语言
-        Consumer<ApplicationViewModel>(
-          builder: (_, applicationViewModel, child) {
+        Consumer<ApplicationProvider>(
+          builder: (_, applicationProvider, child) {
             return Column(
               children: List<Widget>.generate(_languageConfig.length, (index) {
-                return RadioListTile(
-                  value: _languageConfig[index]["locale"].toString(),
-                  groupValue: !applicationViewModel.localeSystem
-                      ? applicationViewModel.locale.toString()
-                      : false,
+                return RadioListTile<Locale>(
+                  value: _languageConfig[index].locale,
+                  groupValue: !applicationProvider.localeSystem
+                      ? applicationProvider.locale
+                      : null,
                   title: Text(
-                    _languageConfig[index]["language"].toString(),
+                    _languageConfig[index].language,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        fontSize: 14.sp, fontWeight: FontWeight.normal),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.normal,
+                        ),
                   ),
-                  onChanged: (value) async {
-                    await PreferencesDB()
-                        .setAppLocale(applicationViewModel, value.toString());
-                  },
+                  onChanged: (value) => applicationProvider.locale = value!,
                 );
               }),
             );

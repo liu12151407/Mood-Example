@@ -1,42 +1,42 @@
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:provider/provider.dart';
 
-///
 import 'package:moodexample/common/local_auth_utils.dart';
-import 'package:moodexample/db/preferences_db.dart';
 import 'package:moodexample/generated/l10n.dart';
 
-///
-import 'package:moodexample/view_models/application/application_view_model.dart';
+import 'package:moodexample/providers/application/application_provider.dart';
 import 'package:remixicon/remixicon.dart';
 
 /// 锁屏
 Future<void> lockScreen(BuildContext context) async {
   final s = S.of(context);
-  ApplicationViewModel applicationViewModel =
-      Provider.of<ApplicationViewModel>(context, listen: false);
-  String password =
-      await PreferencesDB().getAppKeyPassword(applicationViewModel);
+  final ApplicationProvider applicationProvider =
+      context.read<ApplicationProvider>();
+  applicationProvider.loadKeyPassword();
+  applicationProvider.loadKeyBiometric();
+
+  final String password = applicationProvider.keyPassword;
+  final localAuthUtils = await LocalAuthUtils();
 
   /// 支持生物特征识别处理
   Widget? customizedButtonChild;
-  bool canAppKeyBiometric =
-      await PreferencesDB().getAppKeyBiometric(applicationViewModel);
-  bool canLocalAuthBiometrics = await LocalAuthUtils().canLocalAuthBiometrics();
+  final bool canAppKeyBiometric = applicationProvider.keyBiometric;
+  final bool canLocalAuthBiometrics =
+      await localAuthUtils.canLocalAuthBiometrics();
   if (canAppKeyBiometric && canLocalAuthBiometrics) {
+    final localAuthList = await localAuthUtils.localAuthList();
     customizedButtonChild = Icon(
-      await LocalAuthUtils().localAuthIcon(),
+      await localAuthUtils.localAuthIcon(localAuthList),
       size: 28.sp,
       semanticLabel: s.app_setting_security_biometric_weak,
     );
   }
 
-  if (password != "" && !applicationViewModel.keyPasswordScreenOpen) {
+  if (password != '' && !applicationProvider.keyPasswordScreenOpen) {
     if (context.mounted) {
       screenLock(
         context: context,
@@ -45,26 +45,26 @@ Future<void> lockScreen(BuildContext context) async {
         canCancel: false,
         deleteButton: const Icon(
           Remix.delete_back_2_fill,
-          semanticLabel: "删除",
+          semanticLabel: '删除',
         ),
         customizedButtonChild: customizedButtonChild,
         customizedButtonTap: () async {
           final bool localAuthBiometric =
-              await LocalAuthUtils().localAuthBiometric(context);
+              await localAuthUtils.localAuthBiometric(context);
           if (localAuthBiometric) {
-            applicationViewModel.setKeyPasswordScreenOpen(false);
+            applicationProvider.keyPasswordScreenOpen = false;
             if (context.mounted) {
               Navigator.pop(context);
             }
           }
         },
         onOpened: () async {
-          applicationViewModel.setKeyPasswordScreenOpen(true);
+          applicationProvider.keyPasswordScreenOpen = true;
           if (canAppKeyBiometric) {
             final bool localAuthBiometric =
-                await LocalAuthUtils().localAuthBiometric(context);
+                await localAuthUtils.localAuthBiometric(context);
             if (localAuthBiometric) {
-              applicationViewModel.setKeyPasswordScreenOpen(false);
+              applicationProvider.keyPasswordScreenOpen = false;
               if (context.mounted) {
                 Navigator.pop(context);
               }
@@ -72,7 +72,7 @@ Future<void> lockScreen(BuildContext context) async {
           }
         },
         onUnlocked: () {
-          applicationViewModel.setKeyPasswordScreenOpen(false);
+          applicationProvider.keyPasswordScreenOpen = false;
           Navigator.pop(context);
         },
       );
@@ -100,7 +100,7 @@ Future<void> createlockScreen(
     cancelButton: Text(S.of(context).app_setting_security_lock_cancel),
     deleteButton: const Icon(
       Remix.delete_back_2_fill,
-      semanticLabel: "删除",
+      semanticLabel: '删除',
     ),
     footer: TextButton(
       onPressed: () {

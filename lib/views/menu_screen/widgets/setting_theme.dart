@@ -1,29 +1,20 @@
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-///
 import 'package:moodexample/themes/app_theme.dart';
 import 'package:moodexample/generated/l10n.dart';
-import 'package:moodexample/db/preferences_db.dart';
 import 'package:moodexample/config/multiple_themes.dart';
 import 'package:moodexample/widgets/animation/animation.dart';
 
-///
-import 'package:moodexample/view_models/application/application_view_model.dart';
+import 'package:moodexample/providers/application/application_provider.dart';
 
 /// 主题设置
-class SettingTheme extends StatefulWidget {
+class SettingTheme extends StatelessWidget {
   const SettingTheme({super.key});
 
-  @override
-  State<SettingTheme> createState() => _SettingThemeState();
-}
-
-class _SettingThemeState extends State<SettingTheme> {
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -59,33 +50,28 @@ class _SettingThemeState extends State<SettingTheme> {
         ),
 
         const MultipleThemesBody(),
-        SizedBox(height: 48.w)
+        SizedBox(height: 48.w),
       ],
     );
   }
 }
 
 /// 主题外观设置
-class DarkThemeBody extends StatefulWidget {
+class DarkThemeBody extends StatelessWidget {
   const DarkThemeBody({super.key});
 
   @override
-  State<DarkThemeBody> createState() => _DarkThemeBodyState();
-}
-
-class _DarkThemeBodyState extends State<DarkThemeBody> {
-  @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationViewModel>(
-      builder: (_, applicationViewModel, child) {
-        final themeMode = applicationViewModel.themeMode;
+    return Consumer<ApplicationProvider>(
+      builder: (_, applicationProvider, child) {
+        final themeMode = applicationProvider.themeMode;
         return Wrap(
           alignment: WrapAlignment.center,
           direction: Axis.horizontal,
           runSpacing: 16.w,
           spacing: 16.w,
           children: [
-            DarkThemeCard(
+            ThemeCard(
               title: S.of(context).app_setting_theme_appearance_system,
               selected: themeMode == ThemeMode.system,
               child: Row(
@@ -97,7 +83,7 @@ class _DarkThemeBodyState extends State<DarkThemeBody> {
                           ? const Color(0xFFF6F8FA)
                           : const Color(0xFF111315),
                       child: Text(
-                        "Aa",
+                        'Aa',
                         style: TextStyle(
                           color: isDarkMode(context)
                               ? Colors.black87
@@ -115,7 +101,7 @@ class _DarkThemeBodyState extends State<DarkThemeBody> {
                           ? const Color(0xFF111315)
                           : const Color(0xFFF6F8FA),
                       child: Text(
-                        "Aa",
+                        'Aa',
                         style: TextStyle(
                           color: isDarkMode(context)
                               ? const Color(0xFFEFEFEF)
@@ -128,19 +114,16 @@ class _DarkThemeBodyState extends State<DarkThemeBody> {
                   ),
                 ],
               ),
-              onTap: () async {
-                await PreferencesDB()
-                    .setAppThemeDarkMode(applicationViewModel, "system");
-              },
+              onTap: () => applicationProvider.themeMode = ThemeMode.system,
             ),
-            DarkThemeCard(
+            ThemeCard(
               title: S.of(context).app_setting_theme_appearance_light,
               selected: themeMode == ThemeMode.light,
               child: Container(
                 alignment: Alignment.center,
                 color: const Color(0xFFF6F8FA),
                 child: Text(
-                  "Aa",
+                  'Aa',
                   style: TextStyle(
                     color: Colors.black87,
                     fontWeight: FontWeight.bold,
@@ -148,19 +131,16 @@ class _DarkThemeBodyState extends State<DarkThemeBody> {
                   ),
                 ),
               ),
-              onTap: () async {
-                await PreferencesDB()
-                    .setAppThemeDarkMode(applicationViewModel, "light");
-              },
+              onTap: () => applicationProvider.themeMode = ThemeMode.light,
             ),
-            DarkThemeCard(
+            ThemeCard(
               title: S.of(context).app_setting_theme_appearance_dark,
               selected: themeMode == ThemeMode.dark,
               child: Container(
                 alignment: Alignment.center,
                 color: const Color(0xFF111315),
                 child: Text(
-                  "Aa",
+                  'Aa',
                   style: TextStyle(
                     color: const Color(0xFFEFEFEF),
                     fontWeight: FontWeight.bold,
@@ -168,10 +148,7 @@ class _DarkThemeBodyState extends State<DarkThemeBody> {
                   ),
                 ),
               ),
-              onTap: () async {
-                await PreferencesDB()
-                    .setAppThemeDarkMode(applicationViewModel, "dark");
-              },
+              onTap: () => applicationProvider.themeMode = ThemeMode.dark,
             ),
           ],
         );
@@ -192,13 +169,13 @@ class _MultipleThemesBodyState extends State<MultipleThemesBody> {
   @override
   Widget build(BuildContext context) {
     /// 获取多主题Key
-    List appMultipleThemesModeKey = [];
+    final List appMultipleThemesModeKey = [];
     appMultipleThemesMode
         .forEach((key, value) => appMultipleThemesModeKey.add(key));
 
-    return Consumer<ApplicationViewModel>(
-      builder: (_, applicationViewModel, child) {
-        final multipleThemesMode = applicationViewModel.multipleThemesMode;
+    return Consumer<ApplicationProvider>(
+      builder: (_, applicationProvider, child) {
+        final multipleThemesMode = applicationProvider.multipleThemesMode;
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           child: Wrap(
@@ -209,21 +186,20 @@ class _MultipleThemesBodyState extends State<MultipleThemesBody> {
             children: List.generate(
               appMultipleThemesModeKey.length,
               (generator) {
-                String key = appMultipleThemesModeKey[generator];
-                Color primaryColor =
+                final String key = appMultipleThemesModeKey[generator];
+                final Color primaryColor =
                     appMultipleThemesMode[key]![AppMultipleThemesMode.light]!
                         .primaryColor;
                 return MultipleThemesCard(
-                  key: Key("widget_multiple_themes_card_$key"),
+                  key: Key('widget_multiple_themes_card_$key'),
                   selected: multipleThemesMode == key,
                   child: Container(
                     alignment: Alignment.center,
                     color: primaryColor,
                   ),
-                  onTap: () async {
-                    debugPrint("主题:$key");
-                    await PreferencesDB()
-                        .setMultipleThemesMode(applicationViewModel, key);
+                  onTap: () {
+                    print('主题:$key');
+                    applicationProvider.multipleThemesMode = key;
                   },
                 );
               },
@@ -237,15 +213,6 @@ class _MultipleThemesBodyState extends State<MultipleThemesBody> {
 
 /// 多主题卡片
 class MultipleThemesCard extends StatelessWidget {
-  /// 卡片内容
-  final Widget? child;
-
-  /// 是否选中
-  final bool? selected;
-
-  /// 点击触发
-  final Function()? onTap;
-
   const MultipleThemesCard({
     super.key,
     this.child,
@@ -253,9 +220,18 @@ class MultipleThemesCard extends StatelessWidget {
     this.onTap,
   });
 
+  /// 卡片内容
+  final Widget? child;
+
+  /// 是否选中
+  final bool? selected;
+
+  /// 点击触发
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    bool isSelected = selected ?? false;
+    final bool isSelected = selected ?? false;
     return AnimatedPress(
       child: GestureDetector(
         onTap: onTap,
@@ -313,8 +289,16 @@ class MultipleThemesCard extends StatelessWidget {
   }
 }
 
-/// 深色模式卡片
-class DarkThemeCard extends StatelessWidget {
+/// 主题模式卡片
+class ThemeCard extends StatelessWidget {
+  const ThemeCard({
+    super.key,
+    this.child,
+    this.title,
+    this.selected,
+    this.onTap,
+  });
+
   /// 卡片内容
   final Widget? child;
 
@@ -325,19 +309,11 @@ class DarkThemeCard extends StatelessWidget {
   final bool? selected;
 
   /// 点击触发
-  final Function()? onTap;
-
-  const DarkThemeCard({
-    super.key,
-    this.child,
-    this.title,
-    this.selected,
-    this.onTap,
-  });
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    bool isSelected = selected ?? false;
+    final bool isSelected = selected ?? false;
     return AnimatedPress(
       child: GestureDetector(
         onTap: onTap,
@@ -391,7 +367,7 @@ class DarkThemeCard extends StatelessWidget {
             Padding(
               padding: EdgeInsets.only(top: 4.w),
               child: Text(
-                title ?? "",
+                title ?? '',
                 style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold),
               ),
             ),

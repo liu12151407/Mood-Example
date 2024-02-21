@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:remixicon/remixicon.dart';
-import 'package:provider/provider.dart';
 
-///
 import 'package:moodexample/common/utils.dart';
 import 'package:moodexample/generated/l10n.dart';
 import 'package:moodexample/widgets/show_modal_bottom_detail/show_modal_bottom_detail.dart';
@@ -16,29 +13,17 @@ import 'package:moodexample/views/menu_screen/widgets/setting_database.dart';
 import 'package:moodexample/views/menu_screen/widgets/setting_key.dart';
 import 'package:moodexample/routes.dart';
 
-///
-import 'package:moodexample/view_models/application/application_view_model.dart';
-
 /// 外层抽屉菜单（左）
 class MenuScreenLeft extends StatelessWidget {
   const MenuScreenLeft({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ApplicationViewModel>(
-      builder: (_, applicationViewModel, child) {
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          body: GestureDetector(
-            child: const SafeArea(
-              child: MenuScreenLeftBody(),
-            ),
-            onTap: () {
-              ZoomDrawer.of(context)?.toggle.call();
-            },
-          ),
-        );
-      },
+    return GestureDetector(
+      child: const SafeArea(
+        child: MenuScreenLeftBody(),
+      ),
+      onTap: () => ZoomDrawer.of(context)?.toggle.call(),
     );
   }
 }
@@ -53,27 +38,33 @@ class MenuScreenLeftBody extends StatelessWidget {
         parent: BouncingScrollPhysics(),
       ),
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                top: 72.w,
-                bottom: 48.w,
-                left: 24.w,
-                right: 24.w,
-              ),
-              child: const Header(),
+        Padding(
+          padding: EdgeInsets.only(
+            top: 72.w,
+            bottom: 48.w,
+            left: 24.w,
+            right: 24.w,
+          ),
+          child: const Header(),
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+            bottom: 24.w,
+            left: 24.w,
+            right: 24.w,
+          ),
+          child: const Menu(),
+        ),
+
+        /// 插画
+        BlockSemanticsToDrawerClosed(
+          child: Container(
+            padding: EdgeInsets.only(left: 24.w, bottom: 24.w),
+            child: Image.asset(
+              'assets/images/woolly/woolly-comet-2.png',
+              width: 240.w,
             ),
-            Padding(
-              padding: EdgeInsets.only(
-                bottom: 24.w,
-                left: 24.w,
-                right: 24.w,
-              ),
-              child: const Menu(),
-            ),
-          ],
+          ),
         ),
       ],
     );
@@ -88,14 +79,14 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: "关闭设置",
+      label: '关闭设置',
       child: Row(
         children: [
           ClipRRect(
-            key: const Key("widget_menu_screen_left_logo"),
+            key: const Key('widget_menu_screen_left_logo'),
             borderRadius: BorderRadius.circular(14.sp),
             child: Image.asset(
-              "assets/images/logo.png",
+              'assets/images/logo.png',
               width: 42.w,
               height: 42.w,
             ),
@@ -103,13 +94,13 @@ class Header extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(left: 12.w),
             child: Text(
-              "Mood",
+              'Mood',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 28.sp,
                 fontWeight: FontWeight.bold,
               ),
-              semanticsLabel: "",
+              semanticsLabel: '',
             ),
           ),
         ],
@@ -122,11 +113,11 @@ class Header extends StatelessWidget {
 class Menu extends StatelessWidget {
   const Menu({super.key});
 
-  static final _titleTextSize = 14.sp;
-  static final _titleIconSize = 20.sp;
-
   @override
   Widget build(BuildContext context) {
+    final _titleTextSize = 14.sp;
+    final _titleIconSize = 20.sp;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -142,7 +133,7 @@ class Menu extends StatelessWidget {
             ),
           ),
           onTap: () {
-            debugPrint("数据");
+            print('数据');
 
             /// 底部内容弹出
             showModalBottomDetail(
@@ -163,7 +154,7 @@ class Menu extends StatelessWidget {
             ),
           ),
           onTap: () {
-            debugPrint("安全");
+            print('安全');
 
             /// 底部内容弹出
             showModalBottomDetail(
@@ -184,7 +175,7 @@ class Menu extends StatelessWidget {
             ),
           ),
           onTap: () {
-            debugPrint("主题");
+            print('主题');
 
             /// 底部内容弹出
             showModalBottomDetail(
@@ -205,7 +196,7 @@ class Menu extends StatelessWidget {
             ),
           ),
           onTap: () {
-            debugPrint("语言");
+            print('语言');
 
             /// 底部内容弹出
             showModalBottomDetail(
@@ -226,7 +217,7 @@ class Menu extends StatelessWidget {
             ),
           ),
           onTap: () {
-            debugPrint("实验室");
+            print('实验室');
             Navigator.pushNamed(context, Routes.settingLaboratory);
           },
         ),
@@ -242,29 +233,18 @@ class Menu extends StatelessWidget {
             ),
           ),
           onTap: () {
-            debugPrint("关于");
+            print('关于');
             Navigator.pushNamed(
               context,
               Routes.transformParams(
                 router: Routes.webViewPage,
                 params: [
-                  ValueConvert("https://github.com/AmosHuKe/Mood-Example")
-                      .encode()
+                  ValueConvert('https://github.com/AmosHuKe/Mood-Example')
+                      .encode(),
                 ],
               ),
             );
           },
-        ),
-
-        /// 插画
-        BlockSemanticsToDrawerClosed(
-          child: Container(
-            padding: EdgeInsets.only(top: 0.w),
-            child: Image.asset(
-              "assets/images/woolly/woolly-comet-2.png",
-              width: 240.w,
-            ),
-          ),
         ),
       ],
     );
@@ -285,7 +265,7 @@ class MenuList extends StatelessWidget {
   // 标题
   final Widget title;
   // 点击事件
-  final Function()? onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -316,12 +296,10 @@ class BlockSemanticsToDrawerClosed extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<DrawerState>(
       valueListenable: ZoomDrawer.of(context)!.stateNotifier,
-      builder: (_, state, child) {
-        return BlockSemantics(
-          blocking: state == DrawerState.closed,
-          child: child,
-        );
-      },
+      builder: (_, state, child) => BlockSemantics(
+        blocking: state == DrawerState.closed,
+        child: child,
+      ),
       child: child,
     );
   }

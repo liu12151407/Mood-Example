@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:card_swiper/card_swiper.dart';
 
-///
 import 'package:moodexample/themes/app_theme.dart';
 import 'package:moodexample/generated/l10n.dart';
 import 'package:moodexample/widgets/animation/animation.dart';
@@ -72,10 +70,13 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
 
     /// 进步按钮颜色动画
     _stepButtonColorController = AnimationController(
-        duration: const Duration(milliseconds: 500), vsync: this);
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
     _stepButtonColorAnimation = ColorTween(
-            begin: _stepButtonColor, end: _stepButtonColor.withAlpha(200))
-        .animate(_stepButtonColorController);
+      begin: _stepButtonColor,
+      end: _stepButtonColor.withAlpha(200),
+    ).animate(_stepButtonColorController);
   }
 
   @override
@@ -101,7 +102,7 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
       TextImageSwiper(
         title: S.of(context).onboarding_title_1,
         image: Image.asset(
-          "assets/images/onboarding/onboarding_1.png",
+          'assets/images/onboarding/onboarding_1.png',
           fit: BoxFit.cover,
           height: 320.h,
         ),
@@ -117,7 +118,7 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
       TextImageSwiper(
         title: S.of(context).onboarding_title_2,
         image: Image.asset(
-          "assets/images/onboarding/onboarding_2.png",
+          'assets/images/onboarding/onboarding_2.png',
           fit: BoxFit.cover,
           height: 320.h,
         ),
@@ -137,7 +138,7 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
       TextImageSwiper(
         title: S.of(context).onboarding_title_3,
         image: Image.asset(
-          "assets/images/onboarding/onboarding_3.png",
+          'assets/images/onboarding/onboarding_3.png',
           fit: BoxFit.cover,
           height: 320.h,
         ),
@@ -152,26 +153,21 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
       direction: Axis.vertical,
       children: [
         Expanded(
-          flex: 1,
           child: Swiper(
             itemBuilder: (BuildContext context, int index) {
               return _swiperList[index];
             },
-            onIndexChanged: (index) => {
-              if (index != _swiperList.length - 1)
-                {
-                  _stepButtonController.reverse(),
-                  _stepButtonColorController.reverse()
-                }
-              else
-                {
-                  _stepButtonController.forward(),
-                  _stepButtonColorController.forward()
-                },
+            onIndexChanged: (index) {
+              if (index != _swiperList.length - 1) {
+                _stepButtonController.reverse();
+                _stepButtonColorController.reverse();
+              } else {
+                _stepButtonController.forward();
+                _stepButtonColorController.forward();
+              }
               setState(() {
-                /// 赋值当前下标
                 swiperIndex = index;
-              })
+              });
             },
             pagination: SwiperPagination(
               builder: DotSwiperPaginationBuilder(
@@ -194,12 +190,13 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
             child: AnimatedBuilder(
               animation: _stepButtonColorAnimation,
               builder: (context, child) => OutlinedButton(
-                key: const Key("widget_next_button"),
+                key: const Key('widget_next_button'),
                 style: ButtonStyle(
                   padding: MaterialStateProperty.all(EdgeInsets.all(20.w)),
                   foregroundColor: MaterialStateProperty.all(Colors.white),
                   backgroundColor: MaterialStateProperty.all(
-                      _stepButtonColorAnimation.value),
+                    _stepButtonColorAnimation.value,
+                  ),
                   textStyle: MaterialStateProperty.all(
                     TextStyle(
                       fontSize: 240.sp,
@@ -215,15 +212,12 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
                   ),
                   overlayColor: MaterialStateProperty.all(Colors.white10),
                 ),
-                onPressed: () => {
-                  if (swiperIndex == _swiperList.length - 1)
-                    {
-                      Navigator.of(context).pop(),
-                    }
-                  else
-                    {
-                      _swiperController.next(animation: true),
-                    }
+                onPressed: () {
+                  if (swiperIndex == _swiperList.length - 1) {
+                    Navigator.of(context).pop();
+                  } else {
+                    _swiperController.next(animation: true);
+                  }
                 },
                 child: Transform.rotate(
                   angle: _stepButtonCurve.value * 1.58,
@@ -231,7 +225,7 @@ class _SwiperBodyState extends State<SwiperBody> with TickerProviderStateMixin {
                     Remix.arrow_right_line,
                     size: 24.sp,
                     semanticLabel:
-                        swiperIndex == _swiperList.length - 1 ? "开始" : "下一页",
+                        swiperIndex == _swiperList.length - 1 ? '开始' : '下一页',
                   ),
                 ),
               ),
@@ -266,9 +260,7 @@ class TextImageSwiper extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Align(
-          child: image,
-        ),
+        Align(child: image),
         Padding(
           padding: EdgeInsets.only(left: 32.w, right: 32.w),
           child: Text(

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-///
 import 'package:moodexample/common/notification.dart';
 
-/// Application
 import 'application.dart';
 
 void main() {
@@ -19,6 +17,6 @@ void main() {
   /// 强制竖屏
   SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
+    DeviceOrientation.portraitDown,
   ]);
 }

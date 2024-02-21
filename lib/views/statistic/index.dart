@@ -1,22 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-///
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 
-///
 import 'package:moodexample/themes/app_theme.dart';
 import 'package:moodexample/generated/l10n.dart';
 import 'package:moodexample/common/utils.dart';
 import 'package:moodexample/widgets/empty/empty.dart';
 import 'package:moodexample/widgets/animation/animation.dart';
 
-///
-import 'package:moodexample/view_models/statistic/statistic_view_model.dart';
-import 'package:moodexample/services/statistic/statistic_service.dart';
+import 'package:moodexample/models/statistic/statistic_model.dart';
+import 'package:moodexample/providers/statistic/statistic_provider.dart';
 
 /// 统计
 class StatisticPage extends StatefulWidget {
@@ -39,46 +36,38 @@ class _StatisticPageState extends State<StatisticPage>
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: const SafeArea(
-        child: StatisticBody(key: Key("widget_statistic_body")),
+        child: StatisticBody(key: Key('widget_statistic_body')),
       ),
     );
   }
 }
 
 /// 初始化
-init(BuildContext context) {
-  StatisticViewModel statisticViewModel =
-      Provider.of<StatisticViewModel>(context, listen: false);
+void init(BuildContext context) {
+  final StatisticProvider statisticProvider = context.read<StatisticProvider>();
 
   /// 统计的天数
-  final int moodDays = statisticViewModel.moodDays;
+  final int moodDays = statisticProvider.moodDays;
 
   /// 统计-APP累计使用天数
-  StatisticService.getAPPUsageDays(statisticViewModel);
+  statisticProvider.loadDaysCount();
 
   /// 统计-APP累计记录条数
-  StatisticService.getAPPMoodCount(statisticViewModel);
+  statisticProvider.loadMoodCount();
 
   /// 统计-平均情绪波动
-  StatisticService.getMoodScoreAverage(statisticViewModel);
+  statisticProvider.loadMoodScoreAverage();
 
   /// 统计-近日情绪波动
-  StatisticService.getMoodScoreAverageRecently(statisticViewModel,
-      days: moodDays);
+  statisticProvider.loadMoodScoreAverageRecently(days: moodDays);
 
   /// 统计-近日心情数量统计
-  StatisticService.getDateMoodCount(statisticViewModel, days: moodDays);
+  statisticProvider.loadDateMoodCount(days: moodDays);
 }
 
-class StatisticBody extends StatefulWidget {
+class StatisticBody extends StatelessWidget {
   const StatisticBody({super.key});
 
-  @override
-  State<StatisticBody> createState() => _StatisticBodyState();
-}
-
-class _StatisticBodyState extends State<StatisticBody> {
-  late int _filterValue = 7;
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -91,6 +80,7 @@ class _StatisticBodyState extends State<StatisticBody> {
         SliverAppBar(
           pinned: false,
           elevation: 0,
+          forceMaterialTransparency: true,
           backgroundColor: Colors.transparent,
           flexibleSpace: Align(
             child: Container(
@@ -109,55 +99,45 @@ class _StatisticBodyState extends State<StatisticBody> {
                     semanticsLabel:
                         S.of(context).app_bottomNavigationBar_title_statistic,
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      FilterBottom(
-                        S.of(context).statistic_filter_7d,
-                        checked: _filterValue == 7,
-                        semanticsLabel: "筛选7日统计数据",
-                        onTap: () {
-                          if (_filterValue == 7) return;
-                          setState(() {
-                            _filterValue = 7;
-                          });
-                          Provider.of<StatisticViewModel>(context,
-                                  listen: false)
-                              .setMoodDays(7);
-                          init(context);
-                        },
-                      ),
-                      FilterBottom(
-                        S.of(context).statistic_filter_15d,
-                        checked: _filterValue == 15,
-                        semanticsLabel: "筛选15日统计数据",
-                        onTap: () {
-                          if (_filterValue == 15) return;
-                          setState(() {
-                            _filterValue = 15;
-                          });
-                          Provider.of<StatisticViewModel>(context,
-                                  listen: false)
-                              .setMoodDays(15);
-                          init(context);
-                        },
-                      ),
-                      FilterBottom(
-                        S.of(context).statistic_filter_30d,
-                        checked: _filterValue == 30,
-                        semanticsLabel: "筛选30日统计数据",
-                        onTap: () {
-                          if (_filterValue == 30) return;
-                          setState(() {
-                            _filterValue = 30;
-                          });
-                          Provider.of<StatisticViewModel>(context,
-                                  listen: false)
-                              .setMoodDays(30);
-                          init(context);
-                        },
-                      )
-                    ],
+                  Consumer<StatisticProvider>(
+                    builder: (context, statisticProvider, child) {
+                      final int moodDays = statisticProvider.moodDays;
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FilterBottom(
+                            S.of(context).statistic_filter_7d,
+                            checked: moodDays == 7,
+                            semanticsLabel: '筛选7日统计数据',
+                            onTap: () {
+                              if (moodDays == 7) return;
+                              statisticProvider.moodDays = 7;
+                              init(context);
+                            },
+                          ),
+                          FilterBottom(
+                            S.of(context).statistic_filter_15d,
+                            checked: moodDays == 15,
+                            semanticsLabel: '筛选15日统计数据',
+                            onTap: () {
+                              if (moodDays == 15) return;
+                              statisticProvider.moodDays = 15;
+                              init(context);
+                            },
+                          ),
+                          FilterBottom(
+                            S.of(context).statistic_filter_30d,
+                            checked: moodDays == 30,
+                            semanticsLabel: '筛选30日统计数据',
+                            onTap: () {
+                              if (moodDays == 30) return;
+                              statisticProvider.moodDays = 30;
+                              init(context);
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -174,72 +154,68 @@ class _StatisticBodyState extends State<StatisticBody> {
             init(context);
           },
         ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              return Padding(
-                padding: EdgeInsets.only(bottom: 48.h),
-                child: Column(
-                  children: [
-                    /// 总体统计
-                    const OverallStatistics(),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 48.h),
+            child: Column(
+              children: [
+                /// 总体统计
+                const OverallStatistics(),
 
-                    /// 情绪波动（线）
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: 12.w,
-                        left: 24.w,
-                        right: 24.w,
-                      ),
-                      child: const StatisticMoodLine(),
-                    ),
-
-                    /// 情绪波动
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: 12.w,
-                        left: 24.w,
-                        right: 24.w,
-                      ),
-                      child: Consumer<StatisticViewModel>(
-                        builder: (_, statisticViewModel, child) {
-                          return StatisticLayout(
-                            title: S.of(context).statistic_moodScore_title,
-                            subTitle: S.of(context).statistic_moodScore_content(
-                                statisticViewModel.moodDays),
-                            height: 180.w,
-                            statistic: const StatisticWeekMood(),
-                          );
-                        },
-                      ),
-                    ),
-
-                    /// 心情统计
-                    Padding(
-                      padding: EdgeInsets.only(
-                        top: 12.w,
-                        left: 24.w,
-                        right: 24.w,
-                      ),
-                      child: Consumer<StatisticViewModel>(
-                        builder: (_, statisticViewModel, child) {
-                          return StatisticLayout(
-                            title: S.of(context).statistic_moodStatistics_title,
-                            subTitle: S
-                                .of(context)
-                                .statistic_moodStatistics_content(
-                                    statisticViewModel.moodDays),
-                            height: 320.w,
-                            statistic: const StatisticCategoryMood(),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                /// 情绪波动（线）
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 12.w,
+                    left: 24.w,
+                    right: 24.w,
+                  ),
+                  child: const StatisticMoodLine(),
                 ),
-              );
-            },
-            childCount: 1,
+
+                /// 情绪波动
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 12.w,
+                    left: 24.w,
+                    right: 24.w,
+                  ),
+                  child: Consumer<StatisticProvider>(
+                    builder: (_, statisticProvider, child) {
+                      return StatisticLayout(
+                        title: S.of(context).statistic_moodScore_title,
+                        subTitle: S.of(context).statistic_moodScore_content(
+                              statisticProvider.moodDays,
+                            ),
+                        height: 180.w,
+                        statistic: const StatisticWeekMood(),
+                      );
+                    },
+                  ),
+                ),
+
+                /// 心情统计
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 12.w,
+                    left: 24.w,
+                    right: 24.w,
+                  ),
+                  child: Consumer<StatisticProvider>(
+                    builder: (_, statisticProvider, child) {
+                      return StatisticLayout(
+                        title: S.of(context).statistic_moodStatistics_title,
+                        subTitle:
+                            S.of(context).statistic_moodStatistics_content(
+                                  statisticProvider.moodDays,
+                                ),
+                        height: 320.w,
+                        statistic: const StatisticCategoryMood(),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -248,35 +224,31 @@ class _StatisticBodyState extends State<StatisticBody> {
 }
 
 /// 统计-情绪波动（线）
-class StatisticMoodLine extends StatefulWidget {
+class StatisticMoodLine extends StatelessWidget {
   const StatisticMoodLine({super.key});
 
   @override
-  State<StatisticMoodLine> createState() => _StatisticMoodLineState();
-}
-
-class _StatisticMoodLineState extends State<StatisticMoodLine> {
-  @override
   Widget build(BuildContext context) {
-    return Consumer<StatisticViewModel>(
-      builder: (_, statisticViewModel, child) {
+    return Consumer<StatisticProvider>(
+      builder: (_, statisticProvider, child) {
         /// 获取数据 计算近日平均
-        List<Map<String, dynamic>> listData =
-            statisticViewModel.moodScoreAverageRecently;
+        final List<StatisticMoodScoreAverageRecentlyData> listData =
+            statisticProvider.moodScoreAverageRecently;
         double moodScoreAverage = 0;
         double moodScoreSum = 0;
         for (int i = 0; i < listData.length; i++) {
-          moodScoreSum += listData[i]["score"];
+          moodScoreSum += listData[i].score;
         }
         moodScoreAverage = double.parse(
-            (moodScoreSum / statisticViewModel.moodDays).toStringAsFixed(1));
+          (moodScoreSum / statisticProvider.moodDays).toStringAsFixed(1),
+        );
         return StatisticLayout(
           title: S
               .of(context)
               .statistic_moodScoreAverage_title(moodScoreAverage.toString()),
           subTitle: S
               .of(context)
-              .statistic_moodScoreAverage_content(statisticViewModel.moodDays),
+              .statistic_moodScoreAverage_content(statisticProvider.moodDays),
           height: 240.w,
           statistic: const StatisticWeekMoodLine(),
         );
@@ -286,17 +258,12 @@ class _StatisticMoodLineState extends State<StatisticMoodLine> {
 }
 
 /// 周情绪波动统计（线）-数据
-class StatisticWeekMoodLine extends StatefulWidget {
+class StatisticWeekMoodLine extends StatelessWidget {
   const StatisticWeekMoodLine({super.key});
 
   @override
-  State<StatisticWeekMoodLine> createState() => _StatisticWeekMoodLineState();
-}
-
-class _StatisticWeekMoodLineState extends State<StatisticWeekMoodLine> {
-  @override
   Widget build(BuildContext context) {
-    List<Color> gradientColors = [
+    final List<Color> gradientColors = [
       Theme.of(context).primaryColor.withOpacity(0.1),
       Theme.of(context).primaryColor.withOpacity(0.4),
       Theme.of(context).primaryColor.withOpacity(0.6),
@@ -309,14 +276,14 @@ class _StatisticWeekMoodLineState extends State<StatisticWeekMoodLine> {
       Theme.of(context).primaryColor.withOpacity(0.4),
       Theme.of(context).primaryColor.withOpacity(0.1),
     ];
-    return Consumer<StatisticViewModel>(
-      builder: (_, statisticViewModel, child) {
+    return Consumer<StatisticProvider>(
+      builder: (_, statisticProvider, child) {
         /// 获取数据
-        late List<Map<String, dynamic>> listData =
-            statisticViewModel.moodScoreAverageRecently;
+        late List<StatisticMoodScoreAverageRecentlyData> listData =
+            statisticProvider.moodScoreAverageRecently;
 
         /// 统计的天数
-        final int moodDays = statisticViewModel.moodDays;
+        final int moodDays = statisticProvider.moodDays;
 
         /// 数据数量
         final int moodCount = listData.length;
@@ -330,21 +297,26 @@ class _StatisticWeekMoodLineState extends State<StatisticWeekMoodLine> {
         /// 数据为空的占位
         if (moodEmpty) {
           listData = List.generate((days), (i) {
-            return {
-              "datetime": "",
-              "score": 0,
-            };
+            return StatisticMoodScoreAverageRecentlyData(
+              datetime: '',
+              score: 0,
+            );
           });
         }
 
         /// 为了数据效果展示首尾填充占位数据
-        List<Map<String, dynamic>> listFlSpot = [
-          {"datetime": "", "score": listData.first["score"]},
+        final List<StatisticMoodScoreAverageRecentlyData> listFlSpot = [
+          StatisticMoodScoreAverageRecentlyData(
+            datetime: '',
+            score: listData.first.score,
+          ),
           ...listData,
-          {"datetime": "", "score": listData.last["score"]},
+          StatisticMoodScoreAverageRecentlyData(
+            datetime: '',
+            score: listData.last.score,
+          ),
         ];
 
-        ///
         return LineChart(
           LineChartData(
             clipData: const FlClipData.vertical(),
@@ -356,7 +328,7 @@ class _StatisticWeekMoodLineState extends State<StatisticWeekMoodLine> {
                 spots: List<FlSpot>.generate(listFlSpot.length, (i) {
                   return FlSpot(
                     double.parse((i).toString()),
-                    double.parse(listFlSpot[i]["score"].toString()),
+                    double.parse(listFlSpot[i].score.toString()),
                   );
                 }),
                 isCurved: true,
@@ -399,11 +371,11 @@ class _StatisticWeekMoodLineState extends State<StatisticWeekMoodLine> {
                       return null;
                     }
                     return LineTooltipItem(
-                      "",
+                      '',
                       const TextStyle(),
                       children: [
                         TextSpan(
-                          text: "${listFlSpot[i]["score"]} ",
+                          text: '${listFlSpot[i].score} ',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 14.sp,
@@ -411,11 +383,7 @@ class _StatisticWeekMoodLineState extends State<StatisticWeekMoodLine> {
                           ),
                         ),
                         TextSpan(
-                          text: (listFlSpot[i]["datetime"].toString() != ""
-                              ? listFlSpot[i]["datetime"]
-                                  .toString()
-                                  .substring(5, 10)
-                              : ""),
+                          text: listFlSpot[i].datetime.substring(5, 10),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 10.sp,
@@ -458,23 +426,23 @@ class _StatisticWeekMoodLineState extends State<StatisticWeekMoodLine> {
                   const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 18.w,
-                    interval: days > 7 ? ((days / 7) + 1) : (days / 7),
-                    getTitlesWidget: (value, titleMeta) {
-                      final nowListDate =
-                          listFlSpot[(value).toInt()]['datetime'];
-                      return Text(
-                        (nowListDate.toString() != ""
-                            ? nowListDate.toString().substring(8, 10)
-                            : ""),
-                        style: TextStyle(
-                          color: AppTheme.subColor,
-                          fontWeight: FontWeight.normal,
-                          fontSize: 12.sp,
-                        ),
-                      );
-                    }),
+                  showTitles: true,
+                  reservedSize: 18.w,
+                  interval: days > 7 ? ((days / 7) + 1) : (days / 7),
+                  getTitlesWidget: (value, titleMeta) {
+                    final nowListDate = listFlSpot[(value).toInt()].datetime;
+                    return Text(
+                      (nowListDate.toString() != ''
+                          ? nowListDate.toString().substring(8, 10)
+                          : ''),
+                      style: TextStyle(
+                        color: AppTheme.subColor,
+                        fontWeight: FontWeight.normal,
+                        fontSize: 12.sp,
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
             borderData: FlBorderData(
@@ -510,31 +478,33 @@ class OverallStatistics extends StatelessWidget {
           left: 24.w,
           right: 24.w,
         ),
-        child: Consumer<StatisticViewModel>(
-          builder: (_, statisticViewModel, child) {
+        child: Consumer<StatisticProvider>(
+          builder: (_, statisticProvider, child) {
             return IntrinsicHeight(
               child: Row(
                 children: [
                   StatisticsCard(
                     icon: Remix.time_line,
                     title: S.of(context).statistic_overall_daysCount_title(
-                        statisticViewModel.daysCount),
+                          statisticProvider.daysCount,
+                        ),
                     subTitle:
                         S.of(context).statistic_overall_daysCount_subTitle,
                   ),
                   StatisticsCard(
                     icon: Remix.file_list_2_line,
                     title: S.of(context).statistic_overall_moodCount_title(
-                        statisticViewModel.moodCount),
+                          statisticProvider.moodCount,
+                        ),
                     subTitle:
                         S.of(context).statistic_overall_moodCount_subTitle,
                   ),
                   StatisticsCard(
                     icon: Remix.pulse_line,
-                    title: S
-                        .of(context)
-                        .statistic_overall_moodScoreAverage_title(
-                            statisticViewModel.moodScoreAverage),
+                    title:
+                        S.of(context).statistic_overall_moodScoreAverage_title(
+                              statisticProvider.moodScoreAverage,
+                            ),
                     subTitle: S
                         .of(context)
                         .statistic_overall_moodScoreAverage_subTitle,
@@ -559,7 +529,118 @@ class StatisticWeekMood extends StatefulWidget {
 
 class _StatisticWeekMoodState extends State<StatisticWeekMood> {
   /// 当前选择的下标
-  late int _touchedIndex = -1;
+  int _touchedIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<StatisticProvider>(
+      builder: (_, statisticProvider, child) {
+        /// 获取数据
+        List<StatisticMoodScoreAverageRecentlyData> listData =
+            statisticProvider.moodScoreAverageRecently;
+
+        /// 统计的天数
+        final int moodDays = statisticProvider.moodDays;
+
+        /// 数据为空的占位
+        if (listData.isEmpty) {
+          listData = List.generate(moodDays, (i) {
+            return StatisticMoodScoreAverageRecentlyData(
+              datetime: '---------- --------',
+              score: 0,
+            );
+          });
+        }
+
+        /// 根据数据适应每条数据宽度
+        final double barWidth = switch (moodDays) {
+          7 => 14.w,
+          15 => 10.w,
+          30 => 4.w,
+          _ => 14.w,
+        };
+
+        ///
+        return BarChart(
+          BarChartData(
+            barGroups: List<BarChartGroupData>.generate(listData.length, (i) {
+              return makeGroupData(
+                i,
+                double.parse(listData[i].score.toString()),
+                isTouched: i == _touchedIndex,
+                width: barWidth,
+              );
+            }),
+            barTouchData: BarTouchData(
+              touchTooltipData: BarTouchTooltipData(
+                tooltipRoundedRadius: 12.sp,
+                tooltipBgColor: Theme.of(context).primaryColor,
+                getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                  return BarTooltipItem(
+                    '',
+                    const TextStyle(),
+                    children: [
+                      TextSpan(
+                        text: '${rod.toY}\n',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: listData[group.x].datetime.substring(5, 10),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              touchCallback: (FlTouchEvent event, barTouchResponse) {
+                setState(() {
+                  if (!event.isInterestedForInteractions ||
+                      barTouchResponse == null ||
+                      barTouchResponse.spot == null) {
+                    _touchedIndex = -1;
+                    return;
+                  }
+                  _touchedIndex = barTouchResponse.spot!.touchedBarGroupIndex;
+                });
+              },
+            ),
+            maxY: 100,
+            titlesData: FlTitlesData(
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  getTitlesWidget: (value, titleMeta) {
+                    return Text(
+                      '',
+                      style: TextStyle(fontSize: 12.sp),
+                    );
+                  },
+                ),
+              ),
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            ),
+            gridData: const FlGridData(show: false),
+            borderData: FlBorderData(show: false),
+          ),
+          swapAnimationDuration: const Duration(milliseconds: 1000),
+          swapAnimationCurve: Curves.linearToEaseOut,
+        );
+      },
+    );
+  }
 
   /// 每条数据
   BarChartGroupData makeGroupData(
@@ -602,126 +683,6 @@ class _StatisticWeekMoodState extends State<StatisticWeekMood> {
       showingTooltipIndicators: showTooltips,
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<StatisticViewModel>(
-      builder: (_, statisticViewModel, child) {
-        /// 获取数据
-        List<Map<String, dynamic>> listData =
-            statisticViewModel.moodScoreAverageRecently;
-
-        /// 统计的天数
-        final int moodDays = statisticViewModel.moodDays;
-
-        /// 数据为空的占位
-        if (listData.isEmpty) {
-          listData = List.generate(moodDays, (i) {
-            return {
-              "datetime": "---------- --------",
-              "score": 0,
-            };
-          });
-        }
-
-        /// 根据数据适应每条数据宽度
-        late double barWidth = 14.w;
-        switch (moodDays) {
-          case 7:
-            barWidth = 14.w;
-          case 15:
-            barWidth = 10.w;
-          case 30:
-            barWidth = 4.w;
-          default:
-            barWidth = 14.w;
-        }
-
-        ///
-        return BarChart(
-          BarChartData(
-            barGroups: List<BarChartGroupData>.generate(listData.length, (i) {
-              return makeGroupData(
-                i,
-                double.parse(listData[i]['score'].toString()),
-                isTouched: i == _touchedIndex,
-                width: barWidth,
-              );
-            }),
-            barTouchData: BarTouchData(
-              touchTooltipData: BarTouchTooltipData(
-                tooltipRoundedRadius: 12.sp,
-                tooltipBgColor: Theme.of(context).primaryColor,
-                getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                  return BarTooltipItem(
-                    "",
-                    const TextStyle(),
-                    children: [
-                      TextSpan(
-                        text: "${rod.toY}\n",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: (listData[group.x]['datetime'].toString() != ""
-                            ? listData[group.x]['datetime']
-                                .toString()
-                                .substring(5, 10)
-                            : ""),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.normal,
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              touchCallback: (FlTouchEvent event, barTouchResponse) {
-                setState(() {
-                  if (!event.isInterestedForInteractions ||
-                      barTouchResponse == null ||
-                      barTouchResponse.spot == null) {
-                    _touchedIndex = -1;
-                    return;
-                  }
-                  _touchedIndex = barTouchResponse.spot!.touchedBarGroupIndex;
-                });
-              },
-            ),
-            maxY: 100,
-            titlesData: FlTitlesData(
-              topTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, titleMeta) {
-                    return Text(
-                      "",
-                      style: TextStyle(fontSize: 12.sp),
-                    );
-                  },
-                ),
-              ),
-              leftTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            ),
-            gridData: const FlGridData(show: false),
-            borderData: FlBorderData(show: false),
-          ),
-          swapAnimationDuration: const Duration(milliseconds: 1000), // Optional
-          swapAnimationCurve: Curves.linearToEaseOut, // Optional
-        );
-      },
-    );
-  }
 }
 
 /// 心情统计-数据
@@ -735,6 +696,75 @@ class StatisticCategoryMood extends StatefulWidget {
 class _StatisticCategoryMoodState extends State<StatisticCategoryMood> {
   /// 当前选择的下标
   late int _touchedIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<StatisticProvider>(
+      builder: (_, statisticProvider, child) {
+        /// 获取数据
+        final List<StatisticDateMoodCountData> listData =
+            statisticProvider.dateMoodCount;
+
+        /// 空占位
+        if (listData.isEmpty) {
+          return Empty(
+            padding: EdgeInsets.only(top: 48.w),
+            width: 120.w,
+            height: 100.w,
+          );
+        }
+
+        return PieChart(
+          PieChartData(
+            sections: List<PieChartSectionData>.generate(listData.length, (i) {
+              /// 数据
+              final item = listData[i];
+
+              /// 样式
+              final isTouched = i == _touchedIndex;
+              final fontSize = isTouched ? 20.sp : 14.sp;
+              final radius = isTouched ? 120.w : 100.w;
+
+              return makeSectionData(
+                double.parse(item.count.toString()),
+                title: item.icon,
+                radius: radius,
+                fontSize: fontSize,
+                color: statisticColors[i],
+                badgeFontSize: 16.sp,
+                badgeHeight: 28.w,
+                badgeWidth: 28.w,
+              );
+            }),
+            pieTouchData: PieTouchData(
+              /// 触摸回调
+              touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                setState(() {
+                  /// 赋值当前触摸项
+                  if (!event.isInterestedForInteractions ||
+                      pieTouchResponse == null ||
+                      pieTouchResponse.touchedSection == null) {
+                    _touchedIndex = -1;
+                    return;
+                  }
+                  _touchedIndex =
+                      pieTouchResponse.touchedSection!.touchedSectionIndex;
+                });
+              },
+            ),
+            borderData: FlBorderData(
+              show: false,
+            ),
+            sectionsSpace: 0,
+            centerSpaceRadius: 0,
+          ),
+
+          swapAnimationDuration: const Duration(milliseconds: 250), // Optional
+          swapAnimationCurve: Curves.linearToEaseOut, // Optional
+        );
+      },
+    );
+  }
 
   /// 每条数据
   PieChartSectionData makeSectionData(
@@ -786,76 +816,6 @@ class _StatisticCategoryMoodState extends State<StatisticCategoryMood> {
       titlePositionPercentageOffset: 0.6.w,
     );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<StatisticViewModel>(
-      builder: (_, statisticViewModel, child) {
-        late List listData = [];
-
-        /// 获取数据
-        listData = statisticViewModel.dateMoodCount;
-
-        /// 空占位
-        if (listData.isEmpty) {
-          return Empty(
-            padding: EdgeInsets.only(top: 48.w),
-            width: 120.w,
-            height: 100.w,
-          );
-        }
-
-        return PieChart(
-          PieChartData(
-            sections: List<PieChartSectionData>.generate(listData.length, (i) {
-              /// 数据
-              final item = listData[i];
-
-              /// 样式
-              final isTouched = i == _touchedIndex;
-              final fontSize = isTouched ? 20.sp : 14.sp;
-              final radius = isTouched ? 120.w : 100.w;
-
-              return makeSectionData(
-                double.parse(item['count'].toString()),
-                title: item['icon'],
-                radius: radius,
-                fontSize: fontSize,
-                color: statisticColors[i],
-                badgeFontSize: 16.sp,
-                badgeHeight: 28.w,
-                badgeWidth: 28.w,
-              );
-            }),
-            pieTouchData: PieTouchData(
-              /// 触摸回调
-              touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                setState(() {
-                  /// 赋值当前触摸项
-                  if (!event.isInterestedForInteractions ||
-                      pieTouchResponse == null ||
-                      pieTouchResponse.touchedSection == null) {
-                    _touchedIndex = -1;
-                    return;
-                  }
-                  _touchedIndex =
-                      pieTouchResponse.touchedSection!.touchedSectionIndex;
-                });
-              },
-            ),
-            borderData: FlBorderData(
-              show: false,
-            ),
-            sectionsSpace: 0,
-            centerSpaceRadius: 0,
-          ),
-
-          swapAnimationDuration: const Duration(milliseconds: 250), // Optional
-          swapAnimationCurve: Curves.linearToEaseOut, // Optional
-        );
-      },
-    );
-  }
 }
 
 /// 统计Card
@@ -880,12 +840,13 @@ class StatisticsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       container: true,
-      label: "$subTitle$title",
+      label: '$subTitle$title',
       excludeSemantics: true,
       child: Card(
         elevation: 0,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.sp)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.sp),
+        ),
         child: Container(
           constraints: BoxConstraints(
             minWidth: 72.w,
@@ -895,19 +856,17 @@ class StatisticsCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DecoratedBox(
+              Container(
+                width: 36.w,
+                height: 36.w,
                 decoration: const BoxDecoration(
                   color: Colors.black,
                   shape: BoxShape.circle,
                 ),
-                child: SizedBox(
-                  width: 36.w,
-                  height: 36.w,
-                  child: Icon(
-                    icon,
-                    size: 18.sp,
-                    color: Colors.white,
-                  ),
+                child: Icon(
+                  icon,
+                  size: 18.sp,
+                  color: Colors.white,
                 ),
               ),
               Padding(
@@ -962,12 +921,13 @@ class StatisticLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       container: true,
-      label: "$title$subTitle",
+      label: '$title$subTitle',
       excludeSemantics: true,
       child: Card(
         elevation: 0,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.sp)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.sp),
+        ),
         child: Container(
           height: height,
           margin: EdgeInsets.all(24.w),
@@ -985,9 +945,7 @@ class StatisticLayout extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
-                    height: 4.w,
-                  ),
+                  SizedBox(height: 4.w),
                   Text(
                     subTitle,
                     style: TextStyle(
@@ -996,12 +954,8 @@ class StatisticLayout extends StatelessWidget {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  SizedBox(
-                    height: 38.w,
-                  ),
-                  Expanded(
-                    child: statistic,
-                  ),
+                  SizedBox(height: 38.w),
+                  Expanded(child: statistic),
                 ],
               ),
             ],
@@ -1032,11 +986,11 @@ class FilterBottom extends StatelessWidget {
   final String? semanticsLabel;
 
   /// onTap
-  final Function()? onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    Color primaryColor = Theme.of(context).primaryColor;
+    final Color primaryColor = Theme.of(context).primaryColor;
     return AnimatedPress(
       child: Semantics(
         button: true,
@@ -1055,13 +1009,15 @@ class FilterBottom extends StatelessWidget {
               boxShadow: checked
                   ? [
                       BoxShadow(
-                          color:
-                              Theme.of(context).primaryColor.withOpacity(0.2),
-                          blurRadius: 6)
+                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                        blurRadius: 6,
+                      ),
                     ]
                   : [
                       BoxShadow(
-                          color: Colors.black.withOpacity(0.02), blurRadius: 6)
+                        color: Colors.black.withOpacity(0.02),
+                        blurRadius: 6,
+                      ),
                     ],
             ),
             child: Text(

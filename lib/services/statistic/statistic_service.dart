@@ -1,87 +1,68 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-///
 import 'package:intl/intl.dart';
 
-///
 import 'package:moodexample/db/db.dart';
 import 'package:moodexample/common/utils.dart';
 
-///
-import 'package:moodexample/view_models/statistic/statistic_view_model.dart';
+import 'package:moodexample/models/statistic/statistic_model.dart';
 
 /// 统计相关
 class StatisticService {
   /// 获取APP累计记录天数
-  static Future<void> getAPPUsageDays(
-      StatisticViewModel statisticViewModel) async {
-    // 查询
+  static Future<int> getAPPUsageDays() async {
     final list = await DB.db.selectAPPUsageDays();
-    debugPrint("获取APP使用天数$list");
-    final int count = list[0]['dayCount'] ?? 0;
-    // 赋值
-    statisticViewModel.setDaysCount(count);
+    print('获取APP使用天数$list');
+    return list[0]['dayCount'] ?? 0;
   }
 
   /// 获取APP累计记录条数
-  static Future<void> getAPPMoodCount(
-      StatisticViewModel statisticViewModel) async {
-    // 查询
+  static Future<int> getAPPMoodCount() async {
     final list = await DB.db.selectAPPMoodCount();
-    debugPrint("APP累计记录条数$list");
-    final int count = list[0]['moodCount'] ?? 0;
-    // 赋值
-    statisticViewModel.setMoodCount(count);
+    print('APP累计记录条数$list');
+    return list[0]['moodCount'] ?? 0;
   }
 
   /// 获取平均情绪波动
-  static Future<void> getMoodScoreAverage(
-      StatisticViewModel statisticViewModel) async {
-    // 查询
+  static Future<int> getMoodScoreAverage() async {
     final list = await DB.db.selectMoodScoreAverage();
-    debugPrint("平均情绪波动$list");
-    final int count = list[0]['moodScoreAverage'] ?? 0;
-    // 赋值
-    statisticViewModel.setMoodScoreAverage(count);
+    print('平均情绪波动$list');
+    return list[0]['moodScoreAverage'] ?? 0;
   }
 
   /// 获取近日情绪波动
   ///
   /// [days] 往前获取的天数
-  static Future<void> getMoodScoreAverageRecently(
-    StatisticViewModel statisticViewModel, {
-    int days = 7,
-  }) async {
+  static Future<List<StatisticMoodScoreAverageRecentlyData>>
+      getMoodScoreAverageRecently({int days = 7}) async {
     /// 数据
-    late List<Map<String, dynamic>> dataList = [];
-    final nowDate = DateTime.parse(getDatetimeNow("yyyy-MM-dd"));
-    // 获取近7日日期
+    final List<StatisticMoodScoreAverageRecentlyData> dataList = [];
+    final nowDate = DateTime.parse(getDatetimeNow('yyyy-MM-dd'));
+    // 获取近日日期
     for (int i = (days - 1); i >= 0; i--) {
-      late String date =
-          DateFormat("yyyy-MM-dd").format(nowDate.subtract(Duration(days: i)));
+      final String date =
+          DateFormat('yyyy-MM-dd').format(nowDate.subtract(Duration(days: i)));
       // 查询
       final list = await DB.db.selectDateMoodScoreAverage(date);
       final int count = list[0]['moodScoreAverage'] ?? 0;
-      dataList.add({
-        "datetime": date,
-        "score": count,
-      });
+      dataList.add(
+        statisticMoodScoreAverageRecentlyDataFromJson(
+          json.encode({'datetime': date, 'score': count}),
+        ),
+      );
     }
-    debugPrint("近$days日情绪波动$dataList");
-
-    // 赋值
-    statisticViewModel.setMoodScoreAverageRecently(dataList);
+    return dataList;
   }
 
-  /// 获取近7日心情数量统计
+  /// 获取近日心情数量统计
   ///
   /// [days] 往前获取的天数
-  static Future<void> getDateMoodCount(
-    StatisticViewModel statisticViewModel, {
+  static Future<List<StatisticDateMoodCountData>> getDateMoodCount({
     int days = 7,
   }) async {
     /// 数据
-    final nowDate = DateTime.parse(getDatetimeNow("yyyy-MM-dd"));
+    final List<StatisticDateMoodCountData> dataList = [];
+    final nowDate = DateTime.parse(getDatetimeNow('yyyy-MM-dd'));
     // 获取近7日日期
     final String startTime =
         "${DateFormat("yyyy-MM-dd").format(nowDate.subtract(Duration(days: days)))} 00:00:00";
@@ -89,9 +70,9 @@ class StatisticService {
         "${DateFormat("yyyy-MM-dd").format(nowDate)} 23:59:59";
     // 查询
     final list = await DB.db.selectDateMoodCount(startTime, endTime);
-    debugPrint("近$days日心情数量统计$list");
-
-    // 赋值
-    statisticViewModel.setDateMoodCount(list);
+    for (final value in list) {
+      dataList.add(statisticDateMoodCountDataFromJson(json.encode(value)));
+    }
+    return dataList;
   }
 }

@@ -1,5 +1,42 @@
-# Unreleased  
-- [升级] Flutter 3.10.5  
+# 1.9.9
+- [升级] Flutter 3.19.0
+- [升级] Package 升级及适配
+
+# 1.9.8
+- [升级] Flutter 3.16.9
+- [升级] Package 升级及适配
+- [升级] UniMPSDK 3.98
+
+# 1.9.7
+- [升级] Flutter 3.16.1
+- [升级] Package 升级及适配
+
+# 1.9.6
+- [升级] Flutter 3.16.0
+- [升级] Package 升级及适配
+
+# 1.9.5
+- [升级] Flutter 3.13.9
+- [升级] Package 升级及适配
+
+# 1.9.4
+- [升级] Flutter 3.13.7
+- [升级] Package 升级及适配
+
+# 1.9.3
+- [优化] 代码结构
+- [Bug 修复] 部分文字不显示
+
+# 1.9.1
+- [升级] Flutter 3.13.1
+- [升级] Package 升级及适配  
+- [新增] 沉浸模式（全屏模式）
+- [优化] 代码结构
+- [修改] didChangeAppLifecycleState -> AppLifecycleListener
+- [Bug 修复] WebView 报错
+
+# 1.9.0  
+- [升级] Flutter 3.13.0  
 - [升级] Package 升级及适配  
 - [Bug 修复] 游戏终止  
 

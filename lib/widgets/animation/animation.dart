@@ -49,46 +49,30 @@ class _AnimatedPressState extends State<AnimatedPress>
 
   /// 开始动画
   void controllerForward() {
-    AnimationStatus status = _controller.status;
+    final AnimationStatus status = _controller.status;
     if (status != AnimationStatus.forward &&
         status != AnimationStatus.completed) {
-      debugPrint("开始动画");
       _controller.forward();
     }
   }
 
   /// 结束动画
   void controllerReverse() {
-    debugPrint("结束动画");
     _controller.reverse();
   }
 
   @override
   Widget build(BuildContext context) {
     return Listener(
-      onPointerDown: (_) {
-        controllerForward();
-      },
-      onPointerHover: (_) {
-        controllerForward();
-      },
-      onPointerMove: (_) {
-        controllerForward();
-      },
-      onPointerCancel: (_) {
-        controllerReverse();
-      },
-      onPointerUp: (_) {
-        controllerReverse();
-      },
+      onPointerDown: (_) => controllerForward(),
+      onPointerHover: (_) => controllerForward(),
+      onPointerMove: (_) => controllerForward(),
+      onPointerCancel: (_) => controllerReverse(),
+      onPointerUp: (_) => controllerReverse(),
       child: AnimatedBuilder(
         animation: _controller,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _scale.value,
-            child: child,
-          );
-        },
+        builder: (context, child) =>
+            Transform.scale(scale: _scale.value, child: child),
         child: widget.child,
       ),
     );

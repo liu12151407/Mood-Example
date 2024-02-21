@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 
-///
 import 'package:provider/provider.dart';
 
-///
 import 'package:moodexample/config/multiple_themes.dart';
 
-///
-import 'package:moodexample/view_models/application/application_view_model.dart';
+import 'package:moodexample/providers/application/application_provider.dart';
 
 /// 是否深色模式
 bool isDarkMode(BuildContext context) {
   Theme.of(context);
-  final ThemeMode themeMode =
-      Provider.of<ApplicationViewModel>(context, listen: false).themeMode;
+  final ThemeMode themeMode = context.read<ApplicationProvider>().themeMode;
   if (themeMode == ThemeMode.system) {
     return View.of(context).platformDispatcher.platformBrightness ==
         Brightness.dark;
@@ -25,33 +21,25 @@ bool isDarkMode(BuildContext context) {
 /// 当前深色模式
 ///
 /// [mode] system(默认)：跟随系统 light：普通 dark：深色
-ThemeMode darkThemeMode(String mode) {
-  ThemeMode themeMode = ThemeMode.system;
-  switch (mode) {
-    case "system":
-      themeMode = ThemeMode.system;
-    case "dark":
-      themeMode = ThemeMode.dark;
-    case "light":
-      themeMode = ThemeMode.light;
-    default:
-      themeMode = ThemeMode.system;
-  }
-  return themeMode;
-}
+ThemeMode darkThemeMode(String mode) => switch (mode) {
+      'system' => ThemeMode.system,
+      'dark' => ThemeMode.dark,
+      'light' => ThemeMode.light,
+      _ => ThemeMode.system,
+    };
 
 /// 当前多主题
 String getMultipleThemesMode(BuildContext context) {
   final String multipleThemesMode =
-      Provider.of<ApplicationViewModel>(context, listen: false)
-          .multipleThemesMode;
+      context.read<ApplicationProvider>().multipleThemesMode;
   return multipleThemesMode;
 }
 
 /// 主题基础
 class AppTheme {
-  String multipleThemesMode = "default";
   AppTheme(this.multipleThemesMode);
+
+  String multipleThemesMode = 'default';
 
   /// 设备参考大小
   static const double wdp = 360.0;
@@ -68,7 +56,7 @@ class AppTheme {
   /// 多主题 light
   ThemeData? multipleThemesLightMode() {
     ThemeData? lightTheme =
-        appMultipleThemesMode["default"]![AppMultipleThemesMode.light];
+        appMultipleThemesMode['default']![AppMultipleThemesMode.light];
     if (appMultipleThemesMode[multipleThemesMode] != null) {
       lightTheme = appMultipleThemesMode[multipleThemesMode]![
           AppMultipleThemesMode.light];
@@ -79,7 +67,7 @@ class AppTheme {
   /// 多主题 dark
   ThemeData? multipleThemesDarkMode() {
     ThemeData? darkTheme =
-        appMultipleThemesMode["default"]![AppMultipleThemesMode.dark];
+        appMultipleThemesMode['default']![AppMultipleThemesMode.dark];
     if (appMultipleThemesMode[multipleThemesMode] != null) {
       darkTheme = appMultipleThemesMode[multipleThemesMode]![
           AppMultipleThemesMode.dark];
