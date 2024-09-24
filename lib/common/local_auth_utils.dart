@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_ios/local_auth_ios.dart';
+import 'package:local_auth_darwin/local_auth_darwin.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
-import 'package:moodexample/generated/l10n.dart';
+import 'package:moodexample/l10n/gen/app_localizations.dart';
 
 class LocalAuthUtils {
   final LocalAuthentication auth = LocalAuthentication();
@@ -79,13 +79,18 @@ class LocalAuthUtils {
   /// 识别图标
   IconData? localAuthIcon(List<BiometricType> localAuthList) {
     IconData? authIcon;
-    if (localAuthList.contains(BiometricType.weak))
+    if (localAuthList.contains(BiometricType.weak)) {
       authIcon = Remix.body_scan_line;
-    if (localAuthList.contains(BiometricType.iris)) authIcon = Remix.eye_line;
-    if (localAuthList.contains(BiometricType.face))
+    }
+    if (localAuthList.contains(BiometricType.iris)) {
+      authIcon = Remix.eye_line;
+    }
+    if (localAuthList.contains(BiometricType.face)) {
       authIcon = Remix.body_scan_line;
-    if (localAuthList.contains(BiometricType.fingerprint))
+    }
+    if (localAuthList.contains(BiometricType.fingerprint)) {
       authIcon = Remix.fingerprint_line;
+    }
     return authIcon;
   }
 
@@ -95,14 +100,18 @@ class LocalAuthUtils {
     List<BiometricType> localAuthList,
   ) {
     String authText = '';
-    if (localAuthList.contains(BiometricType.weak))
+    if (localAuthList.contains(BiometricType.weak)) {
       authText = S.of(context).app_setting_security_biometric_weak;
-    if (localAuthList.contains(BiometricType.iris))
+    }
+    if (localAuthList.contains(BiometricType.iris)) {
       authText = S.of(context).app_setting_security_biometric_iris;
-    if (localAuthList.contains(BiometricType.face))
+    }
+    if (localAuthList.contains(BiometricType.face)) {
       authText = S.of(context).app_setting_security_biometric_face;
-    if (localAuthList.contains(BiometricType.fingerprint))
+    }
+    if (localAuthList.contains(BiometricType.fingerprint)) {
       authText = S.of(context).app_setting_security_biometric_fingerprint;
+    }
     return authText;
   }
 }

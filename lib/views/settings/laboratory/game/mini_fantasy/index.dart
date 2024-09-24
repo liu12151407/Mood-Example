@@ -2,11 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:bonfire/bonfire.dart';
 
 import 'package:moodexample/themes/app_theme.dart';
+
 import 'package:moodexample/widgets/action_button/action_button.dart';
 
 import 'package:moodexample/views/settings/laboratory/game/mini_fantasy/components/human_player.dart';
@@ -33,20 +34,19 @@ class _MiniFantasyPageState extends State<MiniFantasyPage> {
           backgroundColor: const Color(0xFFF6F8FA),
           foregroundColor: Colors.black87,
           shadowColor: Colors.transparent,
-          titleTextStyle: TextStyle(color: Colors.black, fontSize: 14.sp),
+          titleTextStyle: const TextStyle(color: Colors.black, fontSize: 14),
           title: const Text('MiniFantasy'),
           leading: ActionButton(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.backgroundColor1,
-              borderRadius:
-                  BorderRadius.only(bottomRight: Radius.circular(18.w)),
+              borderRadius: BorderRadius.only(bottomRight: Radius.circular(18)),
             ),
-            child: Icon(
+            child: const Icon(
               Remix.arrow_left_line,
-              size: 24.sp,
+              size: 24,
             ),
             onTap: () {
-              Navigator.of(context).pop();
+              context.pop();
             },
           ),
         ),
@@ -70,23 +70,29 @@ class Game extends StatelessWidget {
         return BonfireWidget(
           debugMode: false,
           showCollisionArea: false,
-          joystick: Joystick(
-            keyboardConfig: KeyboardConfig(
-              acceptedKeys: [
-                LogicalKeyboardKey.space,
-              ],
-            ),
-            directional: JoystickDirectional(),
-            actions: [
-              JoystickAction(
-                actionId: 1,
-                color: Colors.deepOrange,
+          playerControllers: [
+            Joystick(
+              directional: JoystickDirectional(
                 margin: const EdgeInsets.all(65),
               ),
-            ],
-          ),
+              actions: [
+                JoystickAction(
+                  actionId: 1,
+                  color: Colors.deepOrange,
+                  margin: const EdgeInsets.all(65),
+                ),
+              ],
+            ),
+            Keyboard(
+              config: KeyboardConfig(
+                acceptedKeys: [
+                  LogicalKeyboardKey.space,
+                ],
+              ),
+            ),
+          ],
           map: WorldMapByTiled(
-            TiledReader.asset('$assetsPath/tiles/map.json'),
+            WorldMapReader.fromAsset('$assetsPath/tiles/map.json'),
             forceTileSize: Vector2(tileSize, tileSize),
             objectsBuilder: {
               'light': (properties) => Light(

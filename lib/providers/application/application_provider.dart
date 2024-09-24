@@ -4,6 +4,15 @@ import 'package:moodexample/db/preferences_db.dart';
 
 /// App相关
 class ApplicationProvider extends ChangeNotifier {
+  ApplicationProvider() {
+    loadThemeMode();
+    loadMultipleThemesMode();
+    loadLocaleSystem();
+    loadLocale();
+    loadKeyPassword();
+    loadKeyBiometric();
+  }
+
   /// 主题模式
   ThemeMode _themeMode = ThemeMode.system;
 
@@ -26,80 +35,80 @@ class ApplicationProvider extends ChangeNotifier {
   bool _keyBiometric = false;
 
   /// 获取-主题模式
-  void loadThemeMode() async {
-    _themeMode = await PreferencesDB().getAppThemeDarkMode();
+  Future<void> loadThemeMode() async {
+    _themeMode = await PreferencesDB.instance.getAppThemeDarkMode();
     notifyListeners();
   }
 
   /// 设置-主题模式
   set themeMode(ThemeMode themeMode) {
-    PreferencesDB().setAppThemeDarkMode(themeMode);
+    PreferencesDB.instance.setAppThemeDarkMode(themeMode);
     _themeMode = themeMode;
     notifyListeners();
   }
 
   /// 获取-多主题模式
-  void loadMultipleThemesMode() async {
-    _multipleThemesMode = await PreferencesDB().getMultipleThemesMode();
+  Future<void> loadMultipleThemesMode() async {
+    _multipleThemesMode = await PreferencesDB.instance.getMultipleThemesMode();
     notifyListeners();
   }
 
   /// 设置-多主题模式
   set multipleThemesMode(String multipleThemesMode) {
-    PreferencesDB().setMultipleThemesMode(multipleThemesMode);
+    PreferencesDB.instance.setMultipleThemesMode(multipleThemesMode);
     _multipleThemesMode = multipleThemesMode;
     notifyListeners();
   }
 
   /// 获取-语言是否跟随系统
-  void loadLocaleSystem() async {
-    _localeSystem = await PreferencesDB().getAppIsLocaleSystem();
+  Future<void> loadLocaleSystem() async {
+    _localeSystem = await PreferencesDB.instance.getAppIsLocaleSystem();
     notifyListeners();
   }
 
   /// 设置-语言是否跟随系统
   set localeSystem(bool localeSystem) {
-    PreferencesDB().setAppIsLocaleSystem(localeSystem);
+    PreferencesDB.instance.setAppIsLocaleSystem(localeSystem);
     _localeSystem = localeSystem;
     notifyListeners();
   }
 
   /// 获取-语言
-  void loadLocale() async {
-    _locale = await PreferencesDB().getAppLocale();
+  Future<void> loadLocale() async {
+    _locale = await PreferencesDB.instance.getAppLocale();
     notifyListeners();
   }
 
   /// 设置-语言
   set locale(Locale locale) {
     localeSystem = false;
-    PreferencesDB().setAppLocale(locale);
+    PreferencesDB.instance.setAppLocale(locale);
     _locale = locale;
     notifyListeners();
   }
 
   /// 获取-安全-密码内容
-  void loadKeyPassword() async {
-    _keyPassword = await PreferencesDB().getAppKeyPassword();
+  Future<void> loadKeyPassword() async {
+    _keyPassword = await PreferencesDB.instance.getAppKeyPassword();
     notifyListeners();
   }
 
   /// 设置-安全-密码内容
   set keyPassword(String keyPassword) {
-    PreferencesDB().setAppKeyPassword(keyPassword);
+    PreferencesDB.instance.setAppKeyPassword(keyPassword);
     _keyPassword = keyPassword;
     notifyListeners();
   }
 
   /// 获取-安全-生物特征识别是否开启
-  void loadKeyBiometric() async {
-    _keyBiometric = await PreferencesDB().getAppKeyBiometric();
+  Future<void> loadKeyBiometric() async {
+    _keyBiometric = await PreferencesDB.instance.getAppKeyBiometric();
     notifyListeners();
   }
 
   /// 设置-安全-生物特征识别是否开启
   set keyBiometric(bool keyBiometric) {
-    PreferencesDB().setAppKeyBiometric(keyBiometric);
+    PreferencesDB.instance.setAppKeyBiometric(keyBiometric);
     _keyBiometric = keyBiometric;
     notifyListeners();
   }

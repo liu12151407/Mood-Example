@@ -51,7 +51,7 @@ class HumanPlayer extends SimplePlayer
     // 生命条
     setupLifeBar(
       size: Vector2(tileSize * 1.5, tileSize / 5),
-      barLifeDrawPosition: BarLifeDrawPorition.top,
+      barLifeDrawPosition: BarLifeDrawPosition.top,
       showLifeText: false,
       borderWidth: 2,
       borderColor: Colors.white.withOpacity(0.5),
@@ -83,10 +83,12 @@ class HumanPlayer extends SimplePlayer
   @override
   Future<void> onLoad() {
     /// 设置碰撞系统
-    add(RectangleHitbox(
-      size: Vector2(size.x * 0.2, size.y * 0.4),
-      position: Vector2(tileSize * 1.3, tileSize),
-    ));
+    add(
+      RectangleHitbox(
+        size: Vector2(size.x * 0.2, size.y * 0.4),
+        position: Vector2(tileSize * 1.3, tileSize),
+      ),
+    );
     return super.onLoad();
   }
 
@@ -188,36 +190,41 @@ class HumanPlayer extends SimplePlayer
     super.onJoystickChangeDirectional(event);
   }
 
+  /// 处理攻击
+  @override
+  bool handleAttack(AttackOriginEnum attacker, double damage, identify) {
+    return super.handleAttack(attacker, damage, identify);
+  }
+
   /// 受伤触发
   @override
-  void receiveDamage(AttackFromEnum attacker, double damage, dynamic from) {
-    handleReceiveDamage(damage);
-    super.receiveDamage(attacker, damage, from);
+  void onReceiveDamage(AttackOriginEnum attacker, double damage, dynamic from) {
+    if (!isDead) {
+      super.onReceiveDamage(attacker, damage, from);
+
+      /// 伤害显示
+      showDamage(
+        damage,
+        initVelocityVertical: -2,
+        config: TextStyle(color: Colors.white, fontSize: tileSize / 2),
+      );
+      // lockMove = true;
+      /// 屏幕变红
+      // gameRef.lighting
+      //     ?.animateToColor(const Color.fromARGB(255, 26, 0, 0).withOpacity(0.7));
+      // idle();
+      // addDamageAnimation(() {
+      //   lockMove = false;
+      //   gameRef.lighting?.animateToColor(Colors.black.withOpacity(0.7));
+      // });
+    }
   }
 
   /// 死亡
   @override
-  void die() {
+  void onDie() {
     handleDie();
-    super.die();
-  }
-
-  /// 受伤触发
-  void handleReceiveDamage(double damage) {
-    showDamage(
-      damage,
-      initVelocityVertical: -2,
-      config: TextStyle(color: Colors.white, fontSize: tileSize / 2),
-    );
-    // lockMove = true;
-    /// 屏幕变红
-    // gameRef.lighting
-    //     ?.animateToColor(const Color.fromARGB(255, 26, 0, 0).withOpacity(0.7));
-    // idle();
-    // addDamageAnimation(() {
-    //   lockMove = false;
-    //   gameRef.lighting?.animateToColor(Colors.black.withOpacity(0.7));
-    // });
+    super.onDie();
   }
 
   /// 第一次游玩对话
@@ -371,7 +378,7 @@ class HumanPlayer extends SimplePlayer
       withDecorationCollision: false,
       speed: maxSpeed * (tileSize / 10),
       damage: 50.0 + Random().nextInt(10),
-      attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
+      attackFrom: AttackOriginEnum.PLAYER_OR_ALLY,
       marginFromOrigin: 30,
       collision: RectangleHitbox(
         size: Vector2(tileSize, tileSize),
@@ -395,7 +402,7 @@ class HumanPlayer extends SimplePlayer
       withDecorationCollision: false,
       speed: maxSpeed * (tileSize / 10),
       damage: 50.0 + Random().nextInt(20),
-      attackFrom: AttackFromEnum.PLAYER_OR_ALLY,
+      attackFrom: AttackOriginEnum.PLAYER_OR_ALLY,
       marginFromOrigin: 35,
       collision: RectangleHitbox(
         size: Vector2(tileSize, tileSize),

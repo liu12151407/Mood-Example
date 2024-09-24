@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:remixicon/remixicon.dart';
 
 import 'package:moodexample/themes/app_theme.dart';
+
 import 'package:moodexample/widgets/action_button/action_button.dart';
 
 class UniMPMiniappsPage extends StatefulWidget {
@@ -27,20 +28,19 @@ class _UniMPMiniappsPageState extends State<UniMPMiniappsPage> {
           backgroundColor: const Color(0xFFF6F8FA),
           foregroundColor: Colors.black87,
           shadowColor: Colors.transparent,
-          titleTextStyle: TextStyle(color: Colors.black, fontSize: 14.sp),
+          titleTextStyle: const TextStyle(color: Colors.black, fontSize: 14),
           title: const Text('uniapp 小程序'),
           leading: ActionButton(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.backgroundColor1,
-              borderRadius:
-                  BorderRadius.only(bottomRight: Radius.circular(18.w)),
+              borderRadius: BorderRadius.only(bottomRight: Radius.circular(18)),
             ),
-            child: Icon(
+            child: const Icon(
               Remix.arrow_left_line,
-              size: 24.sp,
+              size: 24,
             ),
             onTap: () {
-              Navigator.of(context).pop();
+              context.pop();
             },
           ),
         ),
@@ -77,46 +77,41 @@ class _UniMPMiniappsBodyState extends State<UniMPMiniappsBody> {
     }
 
     return ListView(
-      padding: EdgeInsets.only(
-        left: 24.w,
-        right: 24.w,
-        top: 24.w,
-        bottom: 20.h,
-      ),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 20),
       physics: const AlwaysScrollableScrollPhysics(
         parent: BouncingScrollPhysics(),
       ),
       children: [
         /// 版本
-        Padding(
-          padding: EdgeInsets.only(bottom: 24.w),
-          child: const Column(
+        const Padding(
+          padding: EdgeInsets.only(bottom: 24),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('UniMPSDK_Android 版本：3.98-20231127'),
-              Text('UniMPSDK_iOS 版本：3.98'),
-              Text('HBuilderX 版本：3.98'),
+              Text('UniMPSDK_Android 版本：4.15'),
+              Text('UniMPSDK_iOS 版本：4.15'),
+              Text('HBuilderX 版本：4.15'),
             ],
           ),
         ),
 
         /// 小程序
         ListCard(
-          leading: Icon(
+          leading: const Icon(
             Remix.mini_program_fill,
-            size: 32.sp,
+            size: 32,
             color: Colors.black87,
           ),
-          title: 'uView',
+          title: 'uView2.0',
           subtitle: 'uView UI，是 uni-app 生态优秀的 UI 框架，全面的组件和便捷的工具会让您信手拈来，如鱼得水',
           onPressed: () async {
             await callNativeMethod('__UNI__F87B0CE');
           },
         ),
         ListCard(
-          leading: Icon(
+          leading: const Icon(
             Remix.mini_program_fill,
-            size: 32.sp,
+            size: 32,
             color: Colors.black87,
           ),
           title: 'hello-uniapp',
@@ -154,12 +149,11 @@ class ListCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 12.w),
+      margin: const EdgeInsets.symmetric(vertical: 12),
       shadowColor: Colors.black38,
-      shape:
-          ContinuousRectangleBorder(borderRadius: BorderRadius.circular(48.sp)),
+      shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(48)),
       child: Padding(
-        padding: EdgeInsets.all(14.w),
+        padding: const EdgeInsets.all(14),
         child: Column(
           children: [
             ListTile(

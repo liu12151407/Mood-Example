@@ -9,7 +9,7 @@ import 'orc.dart';
 double tileSize = 20.0;
 
 class Boss extends SimpleEnemy
-    with AutomaticRandomMovement, BlockMovementCollision, UseLifeBar {
+    with RandomMovement, BlockMovementCollision, UseLifeBar {
   Boss(Vector2 position)
       : super(
           position: position,
@@ -21,7 +21,7 @@ class Boss extends SimpleEnemy
     /// 生命条
     setupLifeBar(
       size: Vector2(tileSize * 2.5, tileSize / 5),
-      barLifeDrawPosition: BarLifeDrawPorition.top,
+      barLifeDrawPosition: BarLifeDrawPosition.top,
       showLifeText: false,
       borderWidth: 2,
       borderColor: Colors.white.withOpacity(0.5),
@@ -35,13 +35,15 @@ class Boss extends SimpleEnemy
   @override
   Future<void> onLoad() {
     /// 设置碰撞系统
-    add(RectangleHitbox(
-      size: Vector2(
-        size.x * 0.6,
-        size.y * 0.5,
+    add(
+      RectangleHitbox(
+        size: Vector2(
+          size.x * 0.6,
+          size.y * 0.5,
+        ),
+        position: Vector2(tileSize * 1.2, tileSize * 1.5),
       ),
-      position: Vector2(tileSize * 1.2, tileSize * 1.5),
-    ));
+    );
     return super.onLoad();
   }
 
@@ -76,7 +78,7 @@ class Boss extends SimpleEnemy
           runRandomMovement(
             dt,
             speed: speed / 1.5,
-            maxDistance: (tileSize * 100).toInt(),
+            maxDistance: tileSize * 100,
           );
           return false;
         },
@@ -87,16 +89,24 @@ class Boss extends SimpleEnemy
 
   /// 死亡
   @override
-  void die() {
+  void onDie() {
     _canMove = false;
     removeFromParent();
-    super.die();
+    super.onDie();
+  }
+
+  /// 处理攻击
+  @override
+  bool handleAttack(AttackOriginEnum attacker, double damage, identify) {
+    return super.handleAttack(attacker, damage, identify);
   }
 
   /// 受伤触发
   @override
-  void receiveDamage(AttackFromEnum attacker, double damage, identify) {
+  void onReceiveDamage(AttackOriginEnum attacker, double damage, identify) {
     if (!isDead) {
+      super.onReceiveDamage(attacker, damage, identify);
+
       /// 伤害显示
       showDamage(
         damage,
@@ -104,7 +114,6 @@ class Boss extends SimpleEnemy
         config: TextStyle(color: Colors.amberAccent, fontSize: tileSize / 2),
       );
     }
-    super.receiveDamage(attacker, damage, identify);
   }
 
   /// 攻击

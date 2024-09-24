@@ -42,7 +42,7 @@ class HumanPlayer extends SimplePlayer
     /// 生命条
     setupLifeBar(
       size: Vector2(tileSize * 1.5, tileSize / 5),
-      barLifeDrawPosition: BarLifeDrawPorition.top,
+      barLifeDrawPosition: BarLifeDrawPosition.top,
       showLifeText: false,
       borderWidth: 2,
       borderColor: Colors.white.withOpacity(0.5),
@@ -58,10 +58,12 @@ class HumanPlayer extends SimplePlayer
   @override
   Future<void> onLoad() {
     /// 设置碰撞系统
-    add(RectangleHitbox(
-      size: Vector2(size.x * 0.2, size.y * 0.15),
-      position: Vector2(tileSize * 1.15, tileSize * 1.5),
-    ));
+    add(
+      RectangleHitbox(
+        size: Vector2(size.x * 0.2, size.y * 0.15),
+        position: Vector2(tileSize * 1.15, tileSize * 1.5),
+      ),
+    );
     return super.onLoad();
   }
 
@@ -116,10 +118,19 @@ class HumanPlayer extends SimplePlayer
     super.onJoystickChangeDirectional(event);
   }
 
+  /// 处理攻击
+  @override
+  bool handleAttack(AttackOriginEnum attacker, double damage, identify) {
+    return super.handleAttack(attacker, damage, identify);
+  }
+
   /// 受伤触发
   @override
-  void receiveDamage(AttackFromEnum attacker, double damage, dynamic from) {
+  void onReceiveDamage(AttackOriginEnum attacker, double damage, dynamic from) {
     if (!isDead) {
+      super.onReceiveDamage(attacker, damage, from);
+
+      /// 伤害显示
       showDamage(
         damage,
         initVelocityVertical: -2,
@@ -136,11 +147,10 @@ class HumanPlayer extends SimplePlayer
       //   gameRef.lighting?.animateToColor(Colors.black.withOpacity(0.7));
       // });
     }
-    super.receiveDamage(attacker, damage, from);
   }
 
   @override
-  void die() {
+  void onDie() {
     animation?.playOnce(
       SpriteSheetPlayer.getDie(),
       onFinish: () {
@@ -148,7 +158,7 @@ class HumanPlayer extends SimplePlayer
       },
       runToTheEnd: true,
     );
-    super.die();
+    super.onDie();
   }
 
   /// 攻击动画

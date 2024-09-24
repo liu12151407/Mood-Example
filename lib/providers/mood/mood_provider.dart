@@ -8,6 +8,10 @@ import 'package:moodexample/services/mood/mood_service.dart';
 
 // 心情页相关
 class MoodProvider extends ChangeNotifier {
+  MoodProvider() {
+    load();
+  }
+
   /// 心情数据List
   List<MoodData> _moodDataList = [];
 
@@ -26,26 +30,31 @@ class MoodProvider extends ChangeNotifier {
   /// 所有心情数据List
   List<MoodData>? _moodAllDataList = [];
 
+  Future<void> load() async {
+    await loadMoodCategoryAllList();
+    await loadMoodRecordDateAllList();
+    await loadMoodDataList();
+  }
+
   /// 设置心情类别默认值
-  static Future<bool> setMoodCategoryDefault() async {
+  Future<bool> _setMoodCategoryDefault() async {
     final bool initMoodCategoryDefaultType =
-        await PreferencesDB().getInitMoodCategoryDefaultType();
+        await PreferencesDB.instance.getInitMoodCategoryDefaultType();
     print('心情类别默认值初始化:$initMoodCategoryDefaultType');
     if (!initMoodCategoryDefaultType) {
       print('开始心情类别默认值初始化');
       MoodService.setCategoryDefault();
 
       /// 已赋值默认值标记
-      await PreferencesDB().setInitMoodCategoryDefaultType(true);
+      await PreferencesDB.instance.setInitMoodCategoryDefaultType(true);
     }
     return true;
   }
 
   /// 获取所有心情类别数据列表
-  void loadMoodCategoryAllList() async {
+  Future<void> loadMoodCategoryAllList() async {
     /// 设置心情类别默认值
-    final bool setMoodCategoryDefaultresult =
-        await MoodProvider.setMoodCategoryDefault();
+    final bool setMoodCategoryDefaultresult = await _setMoodCategoryDefault();
     if (setMoodCategoryDefaultresult) {
       /// 获取所有心情类别
       moodCategoryList = await MoodService.getMoodCategoryAll();
@@ -53,35 +62,37 @@ class MoodProvider extends ChangeNotifier {
   }
 
   /// 根据日期获取详细数据列表
-  void loadMoodDataList(String datetime) async {
+  Future<void> loadMoodDataList() async {
     _moodDataLoading = true;
     notifyListeners();
-    moodDataList = await MoodService.getMoodData(datetime);
+    moodDataList = await MoodService.getMoodData(
+      _nowDateTime.toString().substring(0, 10),
+    );
   }
 
   /// 所有心情详细数据列表
-  void loadMoodDataAllList() async {
+  Future<void> loadMoodDataAllList() async {
     moodAllDataList = await MoodService.getMoodAllData();
   }
 
   /// 获取所有记录心情的日期
-  void loadMoodRecordDateAllList() async {
+  Future<void> loadMoodRecordDateAllList() async {
     moodRecordDate = await MoodService.getMoodRecordDate();
   }
 
   /// 添加心情详细数据
   Future<bool> addMoodData(MoodData moodData) async {
-    return await MoodService.addMoodData(moodData);
+    return MoodService.addMoodData(moodData);
   }
 
   /// 修改心情详细数据
   Future<bool> editMoodData(MoodData moodData) async {
-    return await MoodService.editMood(moodData);
+    return MoodService.editMood(moodData);
   }
 
   /// 删除心情详细数据
   Future<bool> deleteMoodData(MoodData moodData) async {
-    return await MoodService.delMood(moodData);
+    return MoodService.delMood(moodData);
   }
 
   /// 赋值心情数据列表

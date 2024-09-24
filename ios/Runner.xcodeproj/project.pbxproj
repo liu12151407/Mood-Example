@@ -769,6 +769,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/UniMP/Core/Libs",
@@ -824,8 +825,6 @@
 					"\"shared_preferences_foundation\"",
 					"-framework",
 					"\"sqflite\"",
-					"-framework",
-					"\"vibration\"",
 					"-framework",
 					"\"webview_flutter_wkwebview\"",
 					"-weak_framework",
@@ -963,6 +962,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/UniMP/Core/Libs",
@@ -1018,8 +1018,6 @@
 					"\"shared_preferences_foundation\"",
 					"-framework",
 					"\"sqflite\"",
-					"-framework",
-					"\"vibration\"",
 					"-framework",
 					"\"webview_flutter_wkwebview\"",
 					"-weak_framework",
@@ -1048,6 +1046,7 @@
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "i386 arm64";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/UniMP/Core/Libs",
@@ -1103,8 +1102,6 @@
 					"\"shared_preferences_foundation\"",
 					"-framework",
 					"\"sqflite\"",
-					"-framework",
-					"\"vibration\"",
 					"-framework",
 					"\"webview_flutter_wkwebview\"",
 					"-weak_framework",

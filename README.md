@@ -12,10 +12,10 @@
 </h1> 
 
 <p align="center">
-  <a target="_blank" href="/CHANGELOG.md"><img alt="Mood-Example v1.9.9" src="https://img.shields.io/badge/Mood--Example-v1.9.9-3e4663"/></a> 
-  <a target="_blank" href="https://flutter.dev/"><img alt="Flutter v3.19.0" src="https://img.shields.io/badge/Flutter-v3.19.0-46D1FD"/></a> 
-  <a target="_blank" href="https://dart.dev/"><img alt="Dart v3.3.0" src="https://img.shields.io/badge/Dart-v3.3.0-04599D"/></a> 
-  <a target="_blank" href="https://github.com/AmosHuKe/Mood-Example/blob/main/LICENSE"><img alt="BSD-3-Clause License" src="https://img.shields.io/badge/license-BSD--3--Clause-green"/></a> 
+  <a href="/CHANGELOG.md"><img alt="Mood-Example v1.9.10" src="https://img.shields.io/badge/Mood--Example-v1.9.10-3e4663"/></a> 
+  <a href="https://flutter.dev/"><img alt="Flutter v3.24.0" src="https://img.shields.io/badge/Flutter-v3.24.0-0468D7"/></a> 
+  <a href="https://dart.dev/"><img alt="Dart v3.5.0" src="https://img.shields.io/badge/Dart-v3.5.0-04599C"/></a> 
+  <a href="https://github.com/AmosHuKe/Mood-Example/blob/main/LICENSE"><img alt="BSD-3-Clause License" src="https://img.shields.io/badge/License-BSD--3--Clause-green"/></a> 
 </p> 
 
 <sub>
@@ -26,13 +26,11 @@
 
 - [功能](#-功能)
 
-- [测试运行环境](#-测试运行环境)
-
 - [开发环境](#️-开发环境)
 
   - [基本环境](#️-基本环境)
 
-  - [国际化环境支持](#️-国际化环境支持)
+  - [i18n l10n](#️-i18n-l10n)
 
 - [启动](#-启动)
 
@@ -57,21 +55,23 @@
 `情绪记录` 样例工程  
 管理自己的情绪，记录当下所见所想，以及其他`实验室`功能（不定时更新一些功能）  
 运用 `Flutter` 的实践工程，主要目的是学习、实践。  
+
+> [!NOTE]  
 > 注意：由于是学习实践工程，所以重点在于学习，许多业务逻辑可能并不符合现实。  
 > Emoji 因设备缘故，会存在不同样式。  
 
 
 ## 🌏 相关网站
 
-> Flutter 官网（中文）：<a target="_blank" href="https://flutter.cn/">https://flutter.cn/</a>  
-> Flutter 官网（英文）：<a target="_blank" href="https://flutter.dev/">https://flutter.dev/</a>  
-> Packages (原始站点) ：<a target="_blank" href="https://pub.dev/">https://pub.dev/</a>  
-> Packages (中国镜像) ：<a target="_blank" href="https://pub-web.flutter-io.cn/">https://pub-web.flutter-io.cn/</a>  
+> Flutter 官网（中文）：[https://flutter.cn/](https://flutter.cn/)  
+> Flutter 官网（英文）：[https://flutter.dev/](https://flutter.dev/)  
+> Packages (原始站点) ：[https://pub.dev/](https://pub.dev/)  
+> Packages (中国镜像) ：[https://pub-web.flutter-io.cn/](https://pub-web.flutter-io.cn/)  
 
 
 ## ⭐ 功能
 
-- [x] 国际化 i18n  
+- [x] 国际化 i18n l10n  
 - [x] 多主题  
 - [x] 深色模式  
 - [x] 本地数据管理  
@@ -87,88 +87,50 @@
 - [x] 本地通知  
 - [x] 动画  
 - [x] 实验室（占用 APP 大部分包体积，源码位置查看项目结构）  
-  - [x] uniapp 小程序（UniMPSDK v3.98）  
+  - [x] uniapp 小程序（UniMPSDK v4.15）  
   - [x] 3D 城市（obj 格式）  
   - [x] 游戏合集（Bonfire, Flame）  
   - [x] FFI 异步调用 C/C++  
 ……
 
 
-## 📱 测试运行环境
-
-| 环境 | 支持版本 |  
-| --- | --- |  
-| Android | 最低：Android 5.0 (API 21) |  
-| iOS | 最低：iOS 12.4 |  
-
-
 ## 🛠️ 开发环境
 
 ### 🛠️ 基本环境  
 
-> Windows  
+Windows:   
 ```
-[√] Flutter (Channel stable, 3.19.0, on Microsoft Windows [版本 10.0.22621.3007], locale zh-CN)
+[√] Flutter (Channel stable, 3.24.0, on Microsoft Windows [版本 10.0.22621.3007], locale zh-CN)
 [√] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
-[√] Visual Studio - develop Windows apps (Visual Studio Community 2022 17.7.5)
-[√] Android Studio (version 2022.3)
-[√] IntelliJ IDEA Ultimate Edition (version 2023.3)
-[√] VS Code (version 1.86.2)
+[√] Visual Studio - develop Windows apps (Visual Studio Community 2022 17.10.5)
+[√] Android Studio (version 2024.1)
+[√] IntelliJ IDEA Ultimate Edition (version 2024.2)
+[√] VS Code (version 1.92.0)
 ```  
 
-> macOS  
+macOS:   
 ```
-[✓] Flutter (Channel stable, 3.19.0, on macOS 14.0 23A344 darwin-x64, locale zh-Hans-CN)
+[✓] Flutter (Channel stable, 3.24.0, on macOS 14.4.1 23E224 darwin-x64, locale zh-Hans-CN)
 [✓] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
-[✓] Xcode - develop for iOS and macOS (Xcode 15.2)
-[✓] Android Studio (version 2021.3)
-[✓] VS Code (version 1.86.1)
+[✓] Xcode - develop for iOS and macOS (Xcode 15.4)
+[✓] Android Studio (version 2024.1)
+[✓] VS Code (version 1.92.0)
 ```  
 
 
-### 🛠️ 国际化环境支持  
+### 🛠️ i18n l10n  
 
-安装编辑器插件：`Flutter Intl`  
-> Visual Studio Code: [Flutter Intl](https://marketplace.visualstudio.com/items?itemName=localizely.flutter-intl)   
-> IntelliJ / Android Studio: [Flutter Intl](https://plugins.jetbrains.com/plugin/13666-flutter-intl)  
-
-```sh
-# 插件指令
-
-# 初始化
-Flutter Intl: Initialize
-
-# 添加 Locale
-Flutter Intl: Add locale
-
-# 删除 Locale
-Flutter Intl: Remove locale
-
-等等...
-```  
-
-使用 `Flutter Intl: Add locale` 输入 `国际化 (i18n) 地区对照语言码`，如简体中文：`zh_CN`，插件会自动在 `lib/l10n` 目录下生成对应的 `arb` 文件，我们只需要在 `arb` 文件中进行翻译。  
-`arb` 翻译工作完成后，将对应的语言添加到 `lib/config/language.dart` 内。  
-即可 `适配设备首选语言` 以及 `在应用语言设置内进行切换`。  
+官方国际化教程：[中文站](https://docs.flutter.cn/ui/accessibility-and-internationalization/internationalization) | [英文站](https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization)  
 
 ```sh
 ├── lib/
 │   ├── config/
-│   │   └── language.dart   # 语言配置
-│   ├── generated/          # intl 语言包生成的文件夹（不用编码，使用 Flutter Intl 插件自动生成）
-│   ├── l10n/               # intl 语言包
-│   │   └──intl_zh_CN.arb   # 如 简体中文：zh_CN
+│   │   └── language.dart   # 语言配置（用于列表选项）
+│   ├── l10n/               # l10n 语言包
+│   │   ├── gen/            # l10n 语言包生成的文件夹（不用编码，自动生成）
+│   │   └── app_zh_CN.arb   # 如 简体中文：zh_CN
+├── l10n.yaml               # l10n 配置
 ......
-```
-
-iOS 支持语言本地化还需要在 `ios/Runner/Info.plist` 进行如下编辑。
-```
-<key>CFBundleLocalizations</key>
-<array>
-    <string>en</string>
-    <string>zh_CN</string>
-    ...
-</array>
 ```
 
 
@@ -227,7 +189,6 @@ $ flutter test integration_test/app_test.dart
 │   │   ├── UniMPSDK/                               # 包含 UniMPSDK 内容
 │   │   │   ├── Apps/                               # 包含 UniMPSDK 的 uniapp 小程序
 │   │   │   └── Core/                               # 包含 UniMPSDK 依赖库
-│   │   ├── AppDelegate_UniMPSDK.swift              # 调用 UniMPSDK 主要逻辑代码
 │   │   ├── AppDelegate.swift                       # Flutter 的 iOS 默认入口
 │   │   ├── Info.plist                              # 项目配置
 │   │   └── Runner-Bridging-Header.h                # 依赖库引入
@@ -239,16 +200,16 @@ $ flutter test integration_test/app_test.dart
 │   │   ├── utils_intl.dart                         # 国际化工具
 │   │   └── utils.dart                              # 工具
 │   ├── config/                                     # 配置
-│   │   ├── language.dart                           # 语言配置
+│   │   ├── language.dart                           # 语言配置（用于列表选项）
 │   │   └── multiple_themes.dart                    # 多主题配置
 │   ├── db/                                         # 数据存储相关
 │   │   ├── database/                               # sqflite 数据表配置
 │   │   ├── db.dart                                 # sqflite 数据库相关
 │   │   └── preferences_db.dart                     # shared_preferences 数据相关
-│   ├── generated/                                  # intl 语言包生成的文件夹（不用编码，使用 Flutter Intl 插件自动生成）
-│   ├── l10n/                                       # intl 语言包
+│   ├── l10n/                                       # l10n 语言包
+│   │   ├── gen/                                    # l10n 语言包生成的文件夹（不用编码，自动生成）
 │   ├── models/                                     # 数据模型
-│   ├── providers/                                  # 业务状态逻辑
+│   ├── providers/                                  # 状态管理
 │   ├── services/                                   # 数据服务
 │   ├── themes/                                     # 主题相关
 │   │   ├── multiple_themes_mode/                   # 多主题配色
@@ -277,8 +238,9 @@ $ flutter test integration_test/app_test.dart
 ├── test/                                           # 测试
 ├── .gitignore                                      # Git 提交仓库忽略文件配置
 ├── .metadata                                       # 当前 workspace 配置记录
-├── analysis_options.yaml                           # Dart 语言代码规范
-├── pubspec.lock                                    # 依赖生成的文件
+├── analysis_options.yaml                           # Dart 代码规范配置
+├── l10n.yaml                                       # l10n 配置
+├── pubspec.lock                                    # 依赖生成的文件（锁定依赖版本等）
 └── pubspec.yaml                                    # 核心配置文件（项目配置、依赖等）
 ```
 
@@ -367,10 +329,9 @@ $ flutter test integration_test/app_test.dart
 |---|---|  
 | [bonfire](https://pub.dev/packages/bonfire) | [MIT License](https://pub.dev/packages/bonfire/license) |  
 | [card_swiper](https://pub.dev/packages/card_swiper) | [MIT License](https://pub.dev/packages/card_swiper/license) |  
-| [cupertino_icons](https://pub.dev/packages/cupertino_icons) | [MIT License](https://pub.dev/packages/cupertino_icons/license) |  
 | [ditredi](https://pub.dev/packages/ditredi) | [MIT License](https://pub.dev/packages/ditredi/license) |  
 | [excel](https://pub.dev/packages/excel) | [MIT License](https://pub.dev/packages/excel/license) |  
-| [fluro](https://pub.dev/packages/fluro) | [MIT License](https://pub.dev/packages/fluro/license) |  
+| [flame](https://pub.dev/packages/flame) | [MIT License](https://pub.dev/packages/flame/license) |  
 | [file_picker](https://pub.dev/packages/file_picker) | [MIT License](https://pub.dev/packages/file_picker/license) |  
 | [flutter_slidable](https://pub.dev/packages/flutter_slidable) | [MIT License](https://pub.dev/packages/flutter_slidable/license) |  
 | [flutter_zoom_drawer](https://pub.dev/packages/flutter_zoom_drawer) | [MIT License](https://pub.dev/packages/flutter_zoom_drawer/license) |  
@@ -380,16 +341,15 @@ $ flutter test integration_test/app_test.dart
 | [provider](https://pub.dev/packages/provider) | [MIT License](https://pub.dev/packages/provider/license) |  
 | [remixicon](https://pub.dev/packages/remixicon) | [MIT License](https://pub.dev/packages/remixicon/license) |  
 | [awesome_notifications](https://pub.dev/packages/awesome_notifications) | [Apache-2.0 License](https://pub.dev/packages/awesome_notifications/license) |  
-| [flutter_screenutil](https://pub.dev/packages/flutter_screenutil) | [Apache-2.0 License](https://pub.dev/packages/flutter_screenutil/license) |  
 | [flutter_timezone](https://pub.dev/packages/flutter_timezone) | [Apache-2.0 License](https://pub.dev/packages/flutter_timezone/license) |  
 | [table_calendar](https://pub.dev/packages/table_calendar) | [Apache-2.0 License](https://pub.dev/packages/table_calendar/license) |  
 | [sqflite](https://pub.dev/packages/sqflite) | [BSD-2-Clause License](https://pub.dev/packages/sqflite/license) |  
-| [vibration](https://pub.dev/packages/vibration) | [BSD-2-Clause License](https://pub.dev/packages/vibration/license) |  
 | [animations](https://pub.dev/packages/animations) | [BSD-3-Clause License](https://pub.dev/packages/animations/license) |  
 | [fl_chart](https://pub.dev/packages/fl_chart) | [BSD-3-Clause License](https://pub.dev/packages/fl_chart/license) |  
 | [flutter_lints](https://pub.dev/packages/flutter_lints) | [BSD-3-Clause License](https://pub.dev/packages/flutter_lints/license) |  
 | [intl](https://pub.dev/packages/intl) | [BSD-3-Clause License](https://pub.dev/packages/intl/license) |  
 | [local_auth](https://pub.dev/packages/local_auth) | [BSD-3-Clause License](https://pub.dev/packages/local_auth/license) |  
+| [go_router](https://pub.dev/packages/go_router) | [BSD-3-Clause License](https://pub.dev/packages/go_router/license) |  
 | [path_provider](https://pub.dev/packages/path_provider) | [BSD-3-Clause License](https://pub.dev/packages/path_provider/license) |  
 | [share_plus](https://pub.dev/packages/share_plus) | [BSD-3-Clause License](https://pub.dev/packages/share_plus/license) |  
 | [shared_preferences](https://pub.dev/packages/shared_preferences) | [BSD-3-Clause License](https://pub.dev/packages/shared_preferences/license) |  
@@ -398,8 +358,7 @@ $ flutter test integration_test/app_test.dart
 
 ## 🖼️ Illustration
 
-<a target="_blank" href="https://icons8.com/illustrations/style--woolly"><img alt="style--woolly" src="https://img.shields.io/badge/Illustration Style-Woolly-BA5A56"/></a>  
-Illustration by <a target="_blank" href="https://icons8.com/illustrations/author/5ed4dd0e01d03600149fec60">Svetlana Tulenina</a> from <a target="_blank" href="https://icons8.com/illustrations">Ouch!</a>  
+Illustration by <a href="https://icons8.com/illustrations/author/iAdLsFJOKDrk">Tanya Krasutska</a> from <a href="https://icons8.com/illustrations">Ouch!</a> 
 
 
 ## 🎨 Design
@@ -409,7 +368,7 @@ Design by [Mindfulness Concept App](https://dribbble.com/shots/15733031-Mindfuln
 
 ## 📄 License
 
-[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-green)](https://github.com/AmosHuKe/Mood-Example/blob/main/LICENSE)  
+[![BSD-3-Clause License](https://img.shields.io/badge/License-BSD--3--Clause-green)](https://github.com/AmosHuKe/Mood-Example/blob/main/LICENSE)  
 Open sourced under the BSD-3-Clause license.  
 根据 BSD-3-Clause 许可证开源。  
 © AmosHuKe

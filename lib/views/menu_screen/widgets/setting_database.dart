@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
@@ -14,8 +13,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 
-import 'package:moodexample/generated/l10n.dart';
-import 'package:moodexample/common/utils.dart';
+import 'package:moodexample/l10n/gen/app_localizations.dart';
 import 'package:moodexample/widgets/animation/animation.dart';
 
 import 'package:moodexample/providers/mood/mood_provider.dart';
@@ -49,16 +47,16 @@ class _SettingDatabaseState extends State<SettingDatabase>
             Tab(
               child: Text(
                 S.of(context).app_setting_database_export_data,
-                style: TextStyle(
-                  fontSize: 14.sp,
+                style: const TextStyle(
+                  fontSize: 14,
                 ),
               ),
             ),
             Tab(
               child: Text(
                 S.of(context).app_setting_database_import_data,
-                style: TextStyle(
-                  fontSize: 14.sp,
+                style: const TextStyle(
+                  fontSize: 14,
                 ),
               ),
             ),
@@ -73,13 +71,13 @@ class _SettingDatabaseState extends State<SettingDatabase>
             children: [
               /// 导出数据
               Container(
-                margin: EdgeInsets.only(top: 64.h),
+                margin: const EdgeInsets.only(top: 64),
                 child: const ExportDatabaseBody(),
               ),
 
               /// 导入数据
               Container(
-                margin: EdgeInsets.only(top: 64.h),
+                margin: const EdgeInsets.only(top: 64),
                 child: const ImportDatabaseBody(),
               ),
             ],
@@ -116,8 +114,8 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
             /// 导入按钮
             AnimatedPress(
               child: Container(
-                width: 128.h,
-                height: 128.h,
+                width: 156,
+                height: 156,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.bottomCenter,
@@ -138,9 +136,9 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                   shape: BoxShape.circle,
                 ),
                 child: _isImport
-                    ? CupertinoActivityIndicator(
-                        radius: 14.sp,
-                        color: const Color(0xFFFFFFFF),
+                    ? const CupertinoActivityIndicator(
+                        radius: 14,
+                        color: Color(0xFFFFFFFF),
                       )
                     : Material(
                         color: Colors.transparent,
@@ -149,11 +147,10 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                           splashColor: Colors.white10,
                           highlightColor: Colors.white10,
                           icon: const Icon(Remix.arrow_up_line),
-                          iconSize: 48.sp,
+                          iconSize: 48,
                           color: const Color(0xFFFFFFFF),
-                          padding: EdgeInsets.all(22.w),
+                          padding: const EdgeInsets.all(22),
                           onPressed: () async {
-                            vibrate();
                             setState(() {
                               _isImport = true;
                               _errorPath = '';
@@ -163,7 +160,6 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                               if (!mounted) return;
                               setState(() {
                                 _isImport = false;
-                                vibrate();
                               });
                               switch (results['state']) {
                                 case 0:
@@ -183,18 +179,7 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                                   /// 更新心情数据
                                   final MoodProvider moodProvider =
                                       context.read<MoodProvider>();
-
-                                  /// 获取所有有记录心情的日期
-                                  moodProvider.loadMoodRecordDateAllList();
-
-                                  /// 处理日期
-                                  final String moodDatetime = moodProvider
-                                      .nowDateTime
-                                      .toString()
-                                      .substring(0, 10);
-
-                                  /// 获取心情数据
-                                  moodProvider.loadMoodDataList(moodDatetime);
+                                  moodProvider.load();
                               }
                             } catch (e) {
                               print('$e');
@@ -212,9 +197,9 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                     return _errorPath.isNotEmpty
                         ? AnimatedPress(
                             child: Container(
-                              width: 64.h,
-                              height: 64.h,
-                              padding: EdgeInsets.only(left: 12.w),
+                              width: 64,
+                              height: 64,
+                              padding: const EdgeInsets.only(left: 12),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.bottomCenter,
@@ -239,13 +224,11 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                                 color: Colors.transparent,
                                 child: TextButton(
                                   style: ButtonStyle(
-                                    shape: MaterialStateProperty.all(
+                                    shape: WidgetStateProperty.all(
                                       const CircleBorder(),
                                     ),
                                   ),
                                   onPressed: () async {
-                                    vibrate();
-
                                     /// 分享文件
                                     Share.shareXFiles([XFile(_errorPath)]);
                                   },
@@ -253,9 +236,9 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                                     S
                                         .of(context)
                                         .app_setting_database_import_data_button_error,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Colors.white,
-                                      fontSize: 12.sp,
+                                      fontSize: 12,
                                     ),
                                     semanticsLabel: '导入错误原因下载',
                                   ),
@@ -270,9 +253,9 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                 /// 下载模板
                 AnimatedPress(
                   child: Container(
-                    width: 64.h,
-                    height: 64.h,
-                    margin: EdgeInsets.only(left: 12.w, top: 12.w),
+                    width: 64,
+                    height: 64,
+                    margin: const EdgeInsets.only(left: 12, top: 12),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
@@ -297,11 +280,9 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                       color: Colors.transparent,
                       child: TextButton(
                         style: ButtonStyle(
-                          shape:
-                              MaterialStateProperty.all(const CircleBorder()),
+                          shape: WidgetStateProperty.all(const CircleBorder()),
                         ),
                         onPressed: () async {
-                          vibrate();
                           final String filePath =
                               await importDatabaseTemplate();
 
@@ -312,9 +293,9 @@ class _ImportDatabaseBodyState extends State<ImportDatabaseBody> {
                           S
                               .of(context)
                               .app_setting_database_import_data_button_template,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 12.sp,
+                            fontSize: 12,
                           ),
                           semanticsLabel: '导入模板下载',
                         ),
@@ -358,11 +339,11 @@ Future<String> importDatabaseTemplate() async {
 
   /// 单元格样式
   final CellStyle cellStyle = CellStyle(
-    fontColorHex: '#FFFFFF',
+    fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
     fontSize: 10,
     bold: true,
     fontFamily: getFontFamily(FontFamily.Microsoft_Sans_Serif),
-    backgroundColorHex: '#3E4663',
+    backgroundColorHex: ExcelColor.fromHexString('#3E4663'),
     horizontalAlign: HorizontalAlign.Center,
     verticalAlign: VerticalAlign.Center,
   );
@@ -375,11 +356,11 @@ Future<String> importDatabaseTemplate() async {
   sheetObject.cell(CellIndex.indexByString('A1'))
     ..value = TextCellValue('MoodExample')
     ..cellStyle = CellStyle(
-      fontColorHex: '#FFFFFF',
+      fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
       fontSize: 10,
       bold: true,
       fontFamily: getFontFamily(FontFamily.Microsoft_Sans_Serif),
-      backgroundColorHex: '#3E4663',
+      backgroundColorHex: ExcelColor.fromHexString('#3E4663'),
       horizontalAlign: HorizontalAlign.Center,
       verticalAlign: VerticalAlign.Center,
     );
@@ -577,11 +558,11 @@ Future<String> importDatabaseError(List<List<Data?>> database) async {
 
     /// 单元格样式
     final CellStyle cellStyle = CellStyle(
-      fontColorHex: '#FFFFFF',
+      fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
       fontSize: 10,
       bold: true,
       fontFamily: getFontFamily(FontFamily.Microsoft_Sans_Serif),
-      backgroundColorHex: '#3E4663',
+      backgroundColorHex: ExcelColor.fromHexString('#3E4663'),
       horizontalAlign: HorizontalAlign.Center,
       verticalAlign: VerticalAlign.Center,
     );
@@ -594,11 +575,11 @@ Future<String> importDatabaseError(List<List<Data?>> database) async {
     sheetObject.cell(CellIndex.indexByString('A1'))
       ..value = TextCellValue('MoodExample')
       ..cellStyle = CellStyle(
-        fontColorHex: '#FFFFFF',
+        fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
         fontSize: 10,
         bold: true,
         fontFamily: getFontFamily(FontFamily.Microsoft_Sans_Serif),
-        backgroundColorHex: '#3E4663',
+        backgroundColorHex: ExcelColor.fromHexString('#3E4663'),
         horizontalAlign: HorizontalAlign.Center,
         verticalAlign: VerticalAlign.Center,
       );
@@ -742,8 +723,8 @@ class _ExportDatabaseBodyState extends State<ExportDatabaseBody> {
       children: [
         AnimatedPress(
           child: Container(
-            width: 128.h,
-            height: 128.h,
+            width: 156,
+            height: 156,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -764,9 +745,9 @@ class _ExportDatabaseBodyState extends State<ExportDatabaseBody> {
               shape: BoxShape.circle,
             ),
             child: _isExport
-                ? CupertinoActivityIndicator(
-                    radius: 14.sp,
-                    color: const Color(0xFFFFFFFF),
+                ? const CupertinoActivityIndicator(
+                    radius: 14,
+                    color: Color(0xFFFFFFFF),
                   )
                 : Material(
                     color: Colors.transparent,
@@ -775,11 +756,10 @@ class _ExportDatabaseBodyState extends State<ExportDatabaseBody> {
                       splashColor: Colors.white10,
                       highlightColor: Colors.white10,
                       icon: const Icon(Remix.arrow_down_line),
-                      iconSize: 48.sp,
+                      iconSize: 48,
                       color: const Color(0xFFFFFFFF),
-                      padding: EdgeInsets.all(22.w),
+                      padding: const EdgeInsets.all(22),
                       onPressed: () async {
-                        vibrate();
                         try {
                           /// 没文件则进行生成
                           if (_exportPath.isEmpty) {
@@ -797,7 +777,6 @@ class _ExportDatabaseBodyState extends State<ExportDatabaseBody> {
                             setState(() {
                               _isExport = false;
                             });
-                            vibrate();
                             if (!mounted) return;
                             SmartDialog.showToast(
                               S
@@ -851,11 +830,11 @@ Future<String> exportDatabase() async {
 
   /// 单元格样式
   final CellStyle cellStyle = CellStyle(
-    fontColorHex: '#FFFFFF',
+    fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
     fontSize: 10,
     bold: true,
     fontFamily: getFontFamily(FontFamily.Microsoft_Sans_Serif),
-    backgroundColorHex: '#3E4663',
+    backgroundColorHex: ExcelColor.fromHexString('#3E4663'),
     horizontalAlign: HorizontalAlign.Center,
     verticalAlign: VerticalAlign.Center,
   );
@@ -868,11 +847,11 @@ Future<String> exportDatabase() async {
   sheetObject.cell(CellIndex.indexByString('A1'))
     ..value = TextCellValue('MoodExample')
     ..cellStyle = CellStyle(
-      fontColorHex: '#FFFFFF',
+      fontColorHex: ExcelColor.fromHexString('#FFFFFF'),
       fontSize: 10,
       bold: true,
       fontFamily: getFontFamily(FontFamily.Microsoft_Sans_Serif),
-      backgroundColorHex: '#3E4663',
+      backgroundColorHex: ExcelColor.fromHexString('#3E4663'),
       horizontalAlign: HorizontalAlign.Center,
       verticalAlign: VerticalAlign.Center,
     );
@@ -906,12 +885,12 @@ Future<String> exportDatabase() async {
   /// 添加Excel数据
   moodAllDataList?.forEach((list) {
     final List<CellValue> dataList = [
-      TextCellValue(list.icon ?? ""),
-      TextCellValue(list.title ?? ""),
-      TextCellValue(list.content ?? ""),
+      TextCellValue(list.icon ?? ''),
+      TextCellValue(list.title ?? ''),
+      TextCellValue(list.content ?? ''),
       TextCellValue(list.score.toString()),
-      TextCellValue(list.createTime ?? ""),
-      TextCellValue(list.updateTime ?? ""),
+      TextCellValue(list.createTime ?? ''),
+      TextCellValue(list.updateTime ?? ''),
     ];
 
     sheetObject.appendRow(dataList);

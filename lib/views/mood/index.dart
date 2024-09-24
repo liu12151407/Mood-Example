@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:remixicon/remixicon.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -10,19 +10,20 @@ import 'package:animations/animations.dart';
 import 'package:intl/intl.dart';
 
 import 'package:moodexample/themes/app_theme.dart';
-import 'package:moodexample/generated/l10n.dart';
+import 'package:moodexample/l10n/gen/app_localizations.dart';
+import 'package:moodexample/common/utils_intl.dart';
+
 import 'package:moodexample/widgets/show_modal_bottom_detail/show_modal_bottom_detail.dart';
 import 'package:moodexample/widgets/empty/empty.dart';
-import 'package:moodexample/common/utils.dart';
-import 'package:moodexample/common/utils_intl.dart';
 import 'package:moodexample/widgets/action_button/action_button.dart';
 import 'package:moodexample/widgets/animation/animation.dart';
+
 import 'package:moodexample/views/mood/mood_content.dart';
 import 'package:moodexample/views/mood/mood_category_select.dart'
     show MoodCategorySelect, MoodCategorySelectType;
 
-import 'package:moodexample/providers/mood/mood_provider.dart';
 import 'package:moodexample/models/mood/mood_model.dart';
+import 'package:moodexample/providers/mood/mood_provider.dart';
 
 /// 心情页（记录列表）
 class MoodPage extends StatefulWidget {
@@ -32,25 +33,14 @@ class MoodPage extends StatefulWidget {
   State<MoodPage> createState() => _MoodPageState();
 }
 
-class _MoodPageState extends State<MoodPage>
-    with AutomaticKeepAliveClientMixin {
-  /// AutomaticKeepAliveClientMixin
-  @override
-  bool get wantKeepAlive => true;
-
+class _MoodPageState extends State<MoodPage> {
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.endOfFrame.then((_) {
-      if (mounted) init(context);
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    /// AutomaticKeepAliveClientMixin
-    super.build(context);
     return Scaffold(
       floatingActionButton: AnimatedPress(
         child: OpenContainer(
@@ -69,18 +59,18 @@ class _MoodPageState extends State<MoodPage>
               highlightElevation: 0,
               label: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Remix.add_fill,
                     color: Colors.white,
-                    size: 16.sp,
+                    size: 18,
                   ),
                   Padding(
-                    padding: EdgeInsets.only(left: 4.sp),
+                    padding: const EdgeInsets.only(left: 4),
                     child: Text(
                       S.of(context).mood_add_button,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 12.sp,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -88,7 +78,6 @@ class _MoodPageState extends State<MoodPage>
                 ],
               ),
               onPressed: () {
-                vibrate();
                 openContainer();
               },
             );
@@ -98,7 +87,7 @@ class _MoodPageState extends State<MoodPage>
           middleColor: Theme.of(context).primaryColor.withOpacity(0.2),
           closedElevation: 0,
           closedShape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(28.w),
+            borderRadius: BorderRadius.circular(28),
           ),
           closedColor: Theme.of(context).scaffoldBackgroundColor,
           openBuilder: (_, closeContainer) => MoodCategorySelect(
@@ -107,26 +96,9 @@ class _MoodPageState extends State<MoodPage>
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: const SafeArea(
-        child: MoodBody(key: Key('widget_mood_body')),
-      ),
+      body: const MoodBody(key: Key('widget_mood_body')),
     );
   }
-}
-
-/// 初始化
-void init(BuildContext context) {
-  final MoodProvider moodProvider = context.read<MoodProvider>();
-
-  /// 获取所有记录心情的日期
-  moodProvider.loadMoodRecordDateAllList();
-
-  /// 处理日期
-  final String moodDatetime =
-      moodProvider.nowDateTime.toString().substring(0, 10);
-
-  /// 获取心情数据
-  moodProvider.loadMoodDataList(moodDatetime);
 }
 
 /// 主体
@@ -145,38 +117,40 @@ class MoodBody extends StatelessWidget {
           elevation: 0,
           forceMaterialTransparency: true,
           backgroundColor: Colors.transparent,
-          flexibleSpace: Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  S.of(context).mood_title,
-                  style: TextStyle(
-                    fontSize: 36.sp,
-                    fontWeight: FontWeight.bold,
+          flexibleSpace: SafeArea(
+            child: Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    S.of(context).mood_title,
+                    style: const TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    semanticsLabel:
+                        S.of(context).app_bottomNavigationBar_title_mood,
                   ),
-                  semanticsLabel:
-                      S.of(context).app_bottomNavigationBar_title_mood,
-                ),
-                Image.asset(
-                  'assets/images/woolly/woolly-heart.png',
-                  height: 60.w,
-                  excludeFromSemantics: true,
-                ),
-              ],
+                  Image.asset(
+                    'assets/images/woolly/woolly-heart.png',
+                    height: 60,
+                    excludeFromSemantics: true,
+                  ),
+                ],
+              ),
             ),
           ),
-          collapsedHeight: 100.w,
-          expandedHeight: 100.w,
+          collapsedHeight: 100,
+          expandedHeight: 100,
         ),
 
         /// 下拉加载
         CupertinoSliverRefreshControl(
           onRefresh: () async {
-            vibrate();
-            init(context);
+            final MoodProvider moodProvider = context.read<MoodProvider>();
+            moodProvider.load();
           },
         ),
 
@@ -191,11 +165,11 @@ class MoodBody extends StatelessWidget {
             /// 加载数据的占位
             if (moodProvider.moodDataLoading) {
               return SliverFixedExtentList(
-                itemExtent: 280.w,
+                itemExtent: 280,
                 delegate: SliverChildBuilderDelegate(
                   (builder, index) {
-                    return Align(
-                      child: CupertinoActivityIndicator(radius: 12.sp),
+                    return const Align(
+                      child: CupertinoActivityIndicator(radius: 12),
                     );
                   },
                   childCount: 1,
@@ -206,13 +180,13 @@ class MoodBody extends StatelessWidget {
             /// 没有数据的占位
             if ((moodProvider.moodDataList.length) <= 0) {
               return SliverFixedExtentList(
-                itemExtent: 280.w,
+                itemExtent: 280,
                 delegate: SliverChildBuilderDelegate(
                   (builder, index) {
-                    return Empty(
-                      padding: EdgeInsets.only(top: 64.w),
-                      height: 160.h,
-                      width: 90.w,
+                    return const Empty(
+                      padding: EdgeInsets.only(top: 64),
+                      height: 160,
+                      width: 90,
                     );
                   },
                   childCount: 1,
@@ -246,7 +220,7 @@ class MoodBody extends StatelessWidget {
         ),
 
         /// 占位高度
-        SliverToBoxAdapter(child: SizedBox(height: 64.w)),
+        const SliverToBoxAdapter(child: SizedBox(height: 64)),
       ],
     );
   }
@@ -267,14 +241,14 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.w),
-      padding: EdgeInsets.only(left: 12.w, right: 12.w, bottom: 12.w),
+      margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.02), blurRadius: 6),
         ],
-        borderRadius: BorderRadius.circular(18.w),
+        borderRadius: BorderRadius.circular(18),
       ),
       child: Consumer<MoodProvider>(
         builder: (context, moodProvider, child) {
@@ -282,6 +256,7 @@ class _CalendarState extends State<Calendar> {
           late final _nowDateTime = moodProvider.nowDateTime;
 
           return TableCalendar(
+            locale: S.of(context).localeName,
             firstDay: DateTime.utc(2021, 10, 01),
             lastDay: DateTime.now(),
             focusedDay: _nowDateTime,
@@ -289,45 +264,45 @@ class _CalendarState extends State<Calendar> {
             calendarFormat: _calendarFormat,
             formatAnimationCurve: Curves.linearToEaseOut,
             pageAnimationCurve: Curves.linearToEaseOut,
-            rowHeight: 52.w,
-            daysOfWeekHeight: 24.w,
+            rowHeight: 52,
+            daysOfWeekHeight: 24,
             // 头部样式
-            headerStyle: HeaderStyle(
+            headerStyle: const HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
-              titleTextStyle: TextStyle(fontSize: 14.sp),
+              titleTextStyle: TextStyle(fontSize: 14),
               leftChevronIcon: Icon(
                 Remix.arrow_left_s_line,
-                size: 24.sp,
+                size: 24,
                 color: AppTheme.subColor,
                 semanticLabel: '日历向前翻页',
               ),
               rightChevronIcon: Icon(
                 Remix.arrow_right_s_line,
-                size: 24.sp,
+                size: 24,
                 color: AppTheme.subColor,
                 semanticLabel: '日历向后翻页',
               ),
               formatButtonTextStyle: TextStyle(
-                fontSize: 10.sp,
+                fontSize: 10,
                 color: AppTheme.subColor,
               ),
               formatButtonDecoration: BoxDecoration(
-                border: const Border.fromBorderSide(
+                border: Border.fromBorderSide(
                   BorderSide(
                     color: AppTheme.backgroundColor1,
                   ),
                 ),
-                borderRadius: BorderRadius.all(Radius.circular(6.w)),
+                borderRadius: BorderRadius.all(Radius.circular(6)),
               ),
             ),
-            daysOfWeekStyle: DaysOfWeekStyle(
+            daysOfWeekStyle: const DaysOfWeekStyle(
               weekdayStyle: TextStyle(
-                fontSize: 12.sp,
+                fontSize: 14,
                 color: AppTheme.subColor,
               ),
               weekendStyle: TextStyle(
-                fontSize: 12.sp,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: AppTheme.subColor,
               ),
@@ -409,15 +384,11 @@ class _CalendarState extends State<Calendar> {
               /// 赋值当前选择的日期
               moodProvider.nowDateTime = selectedDay;
 
-              /// 处理赋值新日期
-              final String moodDatetime =
-                  selectedDay.toString().substring(0, 10);
-
               /// 开启加载
               moodProvider.moodDataLoading = true;
 
               /// 获取心情数据
-              moodProvider.loadMoodDataList(moodDatetime);
+              moodProvider.loadMoodDataList();
             },
             onCalendarCreated: (pageController) {
               /// 初始化触发一次
@@ -462,14 +433,14 @@ class _CalendarState extends State<Calendar> {
     final List<MoodRecordData> list = moodRecordDate ?? [];
 
     return Container(
-      width: 36.w,
-      height: 48.w,
+      width: 36,
+      height: 48,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: bodyColors ?? [Colors.transparent, Colors.transparent],
         ),
         boxShadow: boxShadow,
-        borderRadius: BorderRadius.circular(12.sp),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
         child: Stack(
@@ -490,14 +461,14 @@ class _CalendarState extends State<Calendar> {
                 }
                 if (recordedIndex > -1) {
                   return Container(
-                    margin: EdgeInsets.only(top: 28.w),
+                    margin: const EdgeInsets.only(top: 28),
                     child: Text(
                       list[recordedIndex].icon,
-                      style: TextStyle(fontSize: 8.sp),
+                      style: const TextStyle(fontSize: 8),
                     ),
                   );
                 }
-                return SizedBox();
+                return const SizedBox();
               },
             ),
           ],
@@ -560,11 +531,11 @@ class MoodCard extends StatelessWidget {
                       'widget_mood_card_slidable_action_button_edit',
                     ),
                     semanticsLabel: '编辑',
-                    width: 56.w,
-                    height: 56.w,
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
                       color: const Color(0xFFD6F2E2),
-                      borderRadius: BorderRadius.circular(18.w),
+                      borderRadius: BorderRadius.circular(18),
                     ),
                     onTap: openContainer,
                     child: const Icon(
@@ -578,7 +549,7 @@ class MoodCard extends StatelessWidget {
                 middleColor: Theme.of(context).scaffoldBackgroundColor,
                 closedElevation: 0,
                 closedShape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18.w),
+                  borderRadius: BorderRadius.circular(18),
                 ),
                 closedColor: const Color(0xFFD6F2E2),
                 openBuilder: (_, closeContainer) {
@@ -602,12 +573,12 @@ class MoodCard extends StatelessWidget {
                   'widget_mood_card_slidable_action_button_delete',
                 ),
                 semanticsLabel: '删除',
-                width: 56.w,
-                height: 56.w,
-                margin: EdgeInsets.only(right: 24.w),
+                width: 56,
+                height: 56,
+                margin: const EdgeInsets.only(right: 24),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFEE5E4),
-                  borderRadius: BorderRadius.circular(18.w),
+                  borderRadius: BorderRadius.circular(18),
                 ),
                 child: const Icon(
                   Remix.delete_bin_line,
@@ -628,7 +599,7 @@ class MoodCard extends StatelessWidget {
                           child: Text(
                             S.of(context).mood_data_delete_button_cancel,
                           ),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => context.pop(),
                         ),
                         CupertinoDialogAction(
                           isDestructiveAction: true,
@@ -638,9 +609,11 @@ class MoodCard extends StatelessWidget {
                             final bool result =
                                 await moodProvider.deleteMoodData(moodData);
                             if (result) {
-                              // 重新初始化
-                              init(context);
-                              Navigator.pop(context);
+                              /// 重新初始化
+                              final MoodProvider moodProvider =
+                                  context.read<MoodProvider>();
+                              moodProvider.load();
+                              context.pop();
                             }
                           },
                           child: Text(
@@ -660,17 +633,17 @@ class MoodCard extends StatelessWidget {
       /// 内容
       child: AnimatedPress(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.w),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           child: GestureDetector(
             child: Container(
-              constraints: BoxConstraints(
-                minHeight: 120.w,
+              constraints: const BoxConstraints(
+                minHeight: 120,
               ),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(18.w),
+                borderRadius: BorderRadius.circular(18),
               ),
-              padding: EdgeInsets.all(12.w),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -683,25 +656,26 @@ class MoodCard extends StatelessWidget {
                         child: Row(
                           children: [
                             Container(
-                              width: 48.w,
-                              height: 48.w,
+                              width: 48,
+                              height: 48,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: isDarkMode(context)
                                     ? const Color(0xFF2B3034)
                                     : AppTheme.backgroundColor3,
-                                borderRadius: BorderRadius.circular(14.w),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               child: ExcludeSemantics(
                                 child: Text(
                                   icon,
-                                  style: TextStyle(fontSize: 20.w),
+                                  style: const TextStyle(fontSize: 20),
                                 ),
                               ),
                             ),
                             Expanded(
                               child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 12),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -710,23 +684,23 @@ class MoodCard extends StatelessWidget {
                                         title,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 20.sp,
+                                        style: const TextStyle(
+                                          fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
                                     Padding(
-                                      padding: EdgeInsets.only(top: 4.w),
+                                      padding: const EdgeInsets.only(top: 4),
                                       child: Text(
                                         datetime,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: AppTheme.subColor,
-                                          fontSize: 12.sp,
+                                          fontSize: 14,
                                           fontWeight: FontWeight.normal,
                                         ),
                                         semanticsLabel:
-                                            '${LocaleDatetime.yMMMd(datetime)} 心情：$title',
+                                            '${LocaleDatetime.yMMMd(context, datetime)} 心情：$title',
                                       ),
                                     ),
                                   ],
@@ -737,19 +711,21 @@ class MoodCard extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        width: 42.w,
-                        height: 24.w,
                         alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: isDarkMode(context)
                               ? const Color(0xFF2B3034)
                               : AppTheme.backgroundColor3,
-                          borderRadius: BorderRadius.circular(10.w),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
                           score.toString(),
-                          style: TextStyle(
-                            fontSize: 12.sp,
+                          style: const TextStyle(
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                           semanticsLabel:
@@ -761,10 +737,10 @@ class MoodCard extends StatelessWidget {
 
                   /// 内容
                   Padding(
-                    padding: EdgeInsets.only(
-                      left: 60.w,
-                      top: 20.w,
-                      bottom: 20.w,
+                    padding: const EdgeInsets.only(
+                      left: 60,
+                      top: 20,
+                      bottom: 20,
                     ),
                     child: Text(
                       content ?? S.of(context).mood_data_content_empty,
@@ -775,7 +751,7 @@ class MoodCard extends StatelessWidget {
                         color: content != null
                             ? Theme.of(context).textTheme.bodyMedium!.color
                             : AppTheme.subColor,
-                        fontSize: 14.sp,
+                        fontSize: 14,
                       ),
                       semanticsLabel:
                           content != null ? '记录内容：$content' : '没有记录内容',
@@ -835,22 +811,23 @@ class MoodDetail extends StatelessWidget {
       ),
       children: [
         Align(
-          heightFactor: 2.w,
+          heightFactor: 2,
           child: Text(
-            LocaleDatetime.yMMMd(createTime),
-            style: TextStyle(
-              fontSize: 16.sp,
+            LocaleDatetime.yMMMd(context, createTime),
+            style: const TextStyle(
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: AppTheme.subColor,
             ),
-            semanticsLabel: '${LocaleDatetime.yMMMd(createTime)} 心情：$title',
+            semanticsLabel:
+                '${LocaleDatetime.yMMMd(context, createTime)} 心情：$title',
           ),
         ),
         Padding(
-          padding: EdgeInsets.only(
-            top: 12.w,
-            left: 24.w,
-            right: 24.w,
+          padding: const EdgeInsets.only(
+            top: 12,
+            left: 24,
+            right: 24,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -869,16 +846,16 @@ class MoodDetail extends StatelessWidget {
                   child: Column(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(bottom: 12.w),
+                        padding: const EdgeInsets.only(bottom: 12),
                         child: Text(
                           S.of(context).mood_data_score_title,
-                          style: TextStyle(fontSize: 16.w),
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                       Text(
                         score.toString(),
-                        style: TextStyle(
-                          fontSize: 24.w,
+                        style: const TextStyle(
+                          fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -892,16 +869,16 @@ class MoodDetail extends StatelessWidget {
 
         /// 内容
         Container(
-          margin: EdgeInsets.only(
-            top: 24.w,
-            bottom: 48.w,
-            left: 24.w,
-            right: 24.w,
+          margin: const EdgeInsets.only(
+            top: 24,
+            bottom: 48,
+            left: 24,
+            right: 24,
           ),
-          padding: EdgeInsets.all(24.w),
+          padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: isDarkMode(context) ? const Color(0xFF202427) : Colors.white,
-            borderRadius: BorderRadius.circular(32.w),
+            borderRadius: BorderRadius.circular(32),
           ),
           child: Text(
             content ?? S.of(context).mood_data_content_empty,
@@ -911,7 +888,7 @@ class MoodDetail extends StatelessWidget {
                       ? Colors.white
                       : Colors.black87
                   : AppTheme.subColor,
-              fontSize: 14.sp,
+              fontSize: 14,
             ),
             semanticsLabel: content != null ? '记录内容：$content' : '没有记录内容',
           ),

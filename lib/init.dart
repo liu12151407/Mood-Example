@@ -1,18 +1,15 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:provider/provider.dart';
 
-import 'package:moodexample/themes/app_theme.dart';
-import 'package:moodexample/common/notification.dart';
-import 'package:moodexample/generated/l10n.dart';
-import 'package:moodexample/db/db.dart';
-import 'package:moodexample/widgets/lock_screen/lock_screen.dart';
+import 'themes/app_theme.dart';
+import 'common/notification.dart';
+import 'l10n/gen/app_localizations.dart';
+import 'db/db.dart';
 
-import 'package:moodexample/providers/application/application_provider.dart';
-import 'package:moodexample/providers/mood/mood_provider.dart';
+import 'widgets/lock_screen/lock_screen.dart';
 
 class Init extends StatefulWidget {
   const Init({super.key, required this.child});
@@ -45,9 +42,7 @@ class _InitState extends State<Init> {
     );
 
     /// 初始化
-    WidgetsBinding.instance.endOfFrame.then((_) {
-      if (mounted) init();
-    });
+    init();
   }
 
   @override
@@ -64,14 +59,16 @@ class _InitState extends State<Init> {
       isDarkMode(context)
           ? SystemUiOverlayStyle.dark.copyWith(
               statusBarColor: Colors.transparent,
-              statusBarBrightness: Brightness.light,
+              systemNavigationBarIconBrightness: Brightness.light,
               statusBarIconBrightness: Brightness.light,
+              statusBarBrightness: Brightness.light,
               systemNavigationBarColor: Colors.transparent,
             )
           : SystemUiOverlayStyle.light.copyWith(
               statusBarColor: Colors.transparent,
-              statusBarBrightness: Brightness.dark,
+              systemNavigationBarIconBrightness: Brightness.light,
               statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.dark,
               systemNavigationBarColor: Colors.transparent,
             ),
     );
@@ -80,25 +77,11 @@ class _InitState extends State<Init> {
   }
 
   /// 应用初始化
-  void init() async {
-    final MoodProvider moodProvider = context.read<MoodProvider>();
-    final ApplicationProvider applicationProvider =
-        context.read<ApplicationProvider>();
-
+  Future<void> init() async {
     // 初始化数据库
-    await DB.db.database;
+    await DB.instance.database;
     // 锁屏
     runLockScreen();
-    // 获取所有心情类别
-    moodProvider.loadMoodCategoryAllList();
-    // 触发获取APP主题深色模式
-    applicationProvider.loadThemeMode();
-    // 触发获取APP多主题模式
-    applicationProvider.loadMultipleThemesMode();
-    // 触发获取APP地区语言
-    applicationProvider.loadLocale();
-    // 触发获取APP地区语言是否跟随系统
-    applicationProvider.loadLocaleSystem();
     // 通知权限判断显示
     allowedNotification();
 
@@ -109,13 +92,13 @@ class _InitState extends State<Init> {
   }
 
   /// 锁屏
-  void runLockScreen() async {
+  Future<void> runLockScreen() async {
     if (!mounted) return;
     lockScreen(context);
   }
 
   /// 通知权限判断显示
-  void allowedNotification() async {
+  Future<void> allowedNotification() async {
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) {
       if (!mounted) return;
@@ -124,7 +107,7 @@ class _InitState extends State<Init> {
   }
 
   /// 发送普通通知
-  void sendNotification() async {
+  Future<void> sendNotification() async {
     final bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) return;
     if (!mounted) return;
@@ -141,7 +124,7 @@ class _InitState extends State<Init> {
   }
 
   /// 发送定时计划通知
-  void sendScheduleNotification() async {
+  Future<void> sendScheduleNotification() async {
     final String localTimeZone =
         await AwesomeNotifications().getLocalTimeZoneIdentifier();
     final bool isAllowed = await AwesomeNotifications().isNotificationAllowed();

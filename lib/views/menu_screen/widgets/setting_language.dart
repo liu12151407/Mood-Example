@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:moodexample/generated/l10n.dart';
 import 'package:provider/provider.dart';
 
 import 'package:moodexample/config/language.dart';
+import 'package:moodexample/l10n/gen/app_localizations.dart';
 
+import 'package:moodexample/models/config/language_model.dart';
 import 'package:moodexample/providers/application/application_provider.dart';
 
 /// 语言设置
@@ -13,7 +13,7 @@ class SettingLanguage extends StatelessWidget {
   const SettingLanguage({super.key});
 
   /// 语言列表
-  static const _languageConfig = languageConfig;
+  List<LanguageData> get _languageConfig => languageConfig;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class SettingLanguage extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyMedium!
-                    .copyWith(fontSize: 14.sp, fontWeight: FontWeight.normal),
+                    .copyWith(fontSize: 14, fontWeight: FontWeight.normal),
               ),
               onChanged: (_) => applicationProvider.localeSystem = true,
             );
@@ -57,7 +57,7 @@ class SettingLanguage extends StatelessWidget {
                   title: Text(
                     _languageConfig[index].language,
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 14.sp,
+                          fontSize: 14,
                           fontWeight: FontWeight.normal,
                         ),
                   ),

@@ -5,6 +5,10 @@ import 'package:moodexample/services/statistic/statistic_service.dart';
 
 /// 统计相关
 class StatisticProvider extends ChangeNotifier {
+  StatisticProvider() {
+    load();
+  }
+
   /// 统计的天数
   int _moodDays = 7;
 
@@ -23,30 +27,38 @@ class StatisticProvider extends ChangeNotifier {
   /// 近日心情数量统计
   List<StatisticDateMoodCountData> _dateMoodCount = [];
 
+  Future<void> load() async {
+    await loadDaysCount();
+    await loadMoodCount();
+    await loadMoodScoreAverage();
+    await loadMoodScoreAverageRecently();
+    await loadDateMoodCount();
+  }
+
   /// 获取APP累计使用天数
-  void loadDaysCount() async {
+  Future<void> loadDaysCount() async {
     daysCount = await StatisticService.getAPPUsageDays();
   }
 
   /// 获取APP累计记录条数
-  void loadMoodCount() async {
+  Future<void> loadMoodCount() async {
     moodCount = await StatisticService.getAPPMoodCount();
   }
 
   /// 获取平均情绪波动
-  void loadMoodScoreAverage() async {
+  Future<void> loadMoodScoreAverage() async {
     moodScoreAverage = await StatisticService.getMoodScoreAverage();
   }
 
   /// 获取近日情绪波动
-  void loadMoodScoreAverageRecently({int days = 7}) async {
+  Future<void> loadMoodScoreAverageRecently() async {
     moodScoreAverageRecently =
-        await StatisticService.getMoodScoreAverageRecently(days: days);
+        await StatisticService.getMoodScoreAverageRecently(days: _moodDays);
   }
 
   /// 获取近日心情数量统计
-  void loadDateMoodCount({int days = 7}) async {
-    dateMoodCount = await StatisticService.getDateMoodCount(days: days);
+  Future<void> loadDateMoodCount() async {
+    dateMoodCount = await StatisticService.getDateMoodCount(days: _moodDays);
   }
 
   /// 赋值统计的天数

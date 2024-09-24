@@ -8,7 +8,7 @@ import '../sprite_sheet/sprite_sheet_orc.dart';
 double tileSize = 20.0;
 
 class Orc extends SimpleEnemy
-    with AutomaticRandomMovement, BlockMovementCollision, UseLifeBar {
+    with RandomMovement, BlockMovementCollision, UseLifeBar {
   Orc(Vector2 position)
       : super(
           position: position,
@@ -32,7 +32,7 @@ class Orc extends SimpleEnemy
     /// 生命条
     setupLifeBar(
       size: Vector2(tileSize * 1.5, tileSize / 5),
-      barLifeDrawPosition: BarLifeDrawPorition.top,
+      barLifeDrawPosition: BarLifeDrawPosition.top,
       showLifeText: false,
       borderWidth: 2,
       borderColor: Colors.white.withOpacity(0.5),
@@ -46,13 +46,15 @@ class Orc extends SimpleEnemy
   @override
   Future<void> onLoad() {
     /// 设置碰撞系统
-    add(RectangleHitbox(
-      size: Vector2(
-        size.x * 0.3,
-        size.y * 0.2,
+    add(
+      RectangleHitbox(
+        size: Vector2(
+          size.x * 0.3,
+          size.y * 0.2,
+        ),
+        position: Vector2(tileSize * 1, tileSize * 1.5),
       ),
-      position: Vector2(tileSize * 1, tileSize * 1.5),
-    ));
+    );
     return super.onLoad();
   }
 
@@ -89,7 +91,7 @@ class Orc extends SimpleEnemy
           runRandomMovement(
             dt,
             speed: speed / 3,
-            maxDistance: (tileSize * 2).toInt(),
+            maxDistance: tileSize * 2,
           );
           return false;
         },
@@ -100,7 +102,7 @@ class Orc extends SimpleEnemy
 
   /// 死亡
   @override
-  void die() {
+  void onDie() {
     _canMove = false;
     gameRef.lighting?.animateToColor(Colors.black.withOpacity(0.7));
 
@@ -113,13 +115,21 @@ class Orc extends SimpleEnemy
       },
       runToTheEnd: true,
     );
-    super.die();
+    super.onDie();
+  }
+
+  /// 处理攻击
+  @override
+  bool handleAttack(AttackOriginEnum attacker, double damage, identify) {
+    return super.handleAttack(attacker, damage, identify);
   }
 
   /// 受伤触发
   @override
-  void receiveDamage(AttackFromEnum attacker, double damage, identify) {
+  void onReceiveDamage(AttackOriginEnum attacker, double damage, identify) {
     if (!isDead) {
+      super.onReceiveDamage(attacker, damage, identify);
+
       /// 伤害显示
       showDamage(
         damage,
@@ -130,7 +140,6 @@ class Orc extends SimpleEnemy
       /// 受伤动画
       // _addDamageAnimation();
     }
-    super.receiveDamage(attacker, damage, identify);
   }
 
   /// 攻击动画
