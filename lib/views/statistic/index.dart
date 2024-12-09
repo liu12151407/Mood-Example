@@ -520,7 +520,6 @@ class _StatisticWeekMoodState extends State<StatisticWeekMood> {
           _ => 14,
         };
 
-        ///
         return BarChart(
           BarChartData(
             barGroups: List<BarChartGroupData>.generate(listData.length, (i) {
@@ -595,8 +594,8 @@ class _StatisticWeekMoodState extends State<StatisticWeekMood> {
             gridData: const FlGridData(show: false),
             borderData: FlBorderData(show: false),
           ),
-          swapAnimationDuration: const Duration(milliseconds: 1000),
-          swapAnimationCurve: Curves.linearToEaseOut,
+          duration: const Duration(milliseconds: 1000),
+          curve: Curves.linearToEaseOut,
         );
       },
     );
@@ -718,9 +717,8 @@ class _StatisticCategoryMoodState extends State<StatisticCategoryMood> {
             sectionsSpace: 0,
             centerSpaceRadius: 0,
           ),
-
-          swapAnimationDuration: const Duration(milliseconds: 250), // Optional
-          swapAnimationCurve: Curves.linearToEaseOut, // Optional
+          duration: const Duration(milliseconds: 250), // Optional
+          curve: Curves.linearToEaseOut, // Optional
         );
       },
     );
